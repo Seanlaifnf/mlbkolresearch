@@ -89,12 +89,9 @@ scroll-snap-align:center;border-radius:12px;overflow:hidden;background:#111;
 box-shadow:0 2px 10px rgba(0,0,0,.1)}
 .sl .po,.sl .vd{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 .sl[data-t="i"] .po{object-fit:cover}
-.sl .snd{position:absolute;top:8px;left:8px;z-index:5;width:30px;height:30px;
-border:0;padding:0;border-radius:50%;background:#0a0a0abf;color:#fff;font-size:13px;
-line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;
--webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s}
-.sl .snd.on{background:var(--ac)}
-.sl .snd:active{transform:scale(.92)}
+
+
+
 .sl .out{position:absolute;top:8px;right:8px;z-index:4;width:26px;height:26px;border-radius:50%;
 background:#0a0a0abf;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
 a.sl{text-decoration:none}
@@ -272,52 +269,15 @@ function setupLazy(){
     es.forEach(function(en){
       var v=en.target;
       if(en.isIntersecting&&en.intersectionRatio>=.5){
-        if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){});}
+        if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(function(){});});}
       }else{
         if(!v.paused)v.pause();
         /* fully off screen: hand the audio back so nothing plays out of sight */
-        if(!en.isIntersecting&&!v.muted){v.muted=true;syncBadges();}
+        if(!en.isIntersecting&&!v.muted){v.muted=true;}
       }
     });
   },{threshold:[0,.5]});
   all.forEach(function(v){io.observe(v);});
-}
-/* audio: clips stay muted at rest so the scroll-autoplay above keeps working.
-   A tap on the badge is the user gesture browsers require before unmuting, and
-   audio is exclusive - 49 clips in a scrolling grid must not all talk at once. */
-function syncBadges(){
-  document.querySelectorAll('.sl').forEach(function(sl){
-    var v=sl.querySelector('video.vd'), b=sl.querySelector('.snd');
-    if(!v||!b) return;
-    b.textContent=String.fromCodePoint(v.muted?0x1F507:0x1F50A);
-    b.classList.toggle('on',!v.muted);
-    b.setAttribute('aria-label',(v.muted?'Turn sound on':'Mute')+' for this clip');
-    b.setAttribute('aria-pressed',v.muted?'false':'true');
-  });
-}
-function soloAudio(v){
-  document.querySelectorAll('video.vd').forEach(function(o){if(o!==v)o.muted=true;});
-  v.muted=false;
-  var p=v.play();
-  /* if the browser still refuses, fall back to muted rather than leaving it stalled */
-  if(p&&p.catch)p.catch(function(){v.muted=true;syncBadges();});
-  syncBadges();
-}
-function setupSound(){
-  document.querySelectorAll('.sl').forEach(function(sl){
-    var v=sl.querySelector('video.vd');
-    if(!v||sl.querySelector('.snd')) return;
-    var b=document.createElement('button');
-    b.className='snd'; b.type='button';
-    b.addEventListener('click',function(e){
-      e.preventDefault(); e.stopPropagation();
-      if(v.muted) soloAudio(v); else { v.muted=true; syncBadges(); }
-    });
-    /* native controls carry their own mute toggle - keep the badge in step with it */
-    v.addEventListener('volumechange',syncBadges);
-    sl.appendChild(b);
-  });
-  syncBadges();
 }
 function toggleAll(b){
   var p=b.closest('.pn'), open=b.dataset.o!=='1';
@@ -325,7 +285,7 @@ function toggleAll(b){
   b.dataset.o=open?'1':'0'; b.textContent=open?'Collapse all':'Expand all';
 }
 document.addEventListener('DOMContentLoaded',function(){
-  dedupe(); setupLazy(); setupSound();
+  dedupe(); setupLazy();
   vw=document.getElementById('vw');
   stage=vw.querySelector('.stage'); pos=vw.querySelector('.pos');
   vw.querySelector('.x').onclick=close_;
