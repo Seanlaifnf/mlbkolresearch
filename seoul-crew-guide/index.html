@@ -270,22 +270,41 @@ function setupTapControls(){
     v.addEventListener('click',function(){ if(!v.controls) v.controls=true; });
   });
 }
+function warm(v){
+  if(v.dataset.warm) return; v.dataset.warm='1';
+  v.preload='auto';
+  try{v.load();}catch(e){}
+}
+function tryPlay(v){
+  if(v.dataset.vis!=='1'||!v.paused) return;
+  var p=v.play();
+  if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(function(){});});
+}
 function setupLazy(){
   var all=document.querySelectorAll('video.vd');
   if(!('IntersectionObserver' in window)){all.forEach(function(v){v.autoplay=true;});return;}
+  /* start buffering clips shortly before they arrive, and only begin playback once
+     frames are ready - the poster holds instead of cutting to black on swipe */
+  var pre=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting) warm(en.target); });
+  },{rootMargin:'150% 400% 150% 400%'});
   var io=new IntersectionObserver(function(es){
     es.forEach(function(en){
       var v=en.target;
       if(en.isIntersecting&&en.intersectionRatio>=.5){
-        if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(function(){});});}
+        v.dataset.vis='1';
+        warm(v);
+        if(v.readyState>=3){tryPlay(v);}
+        else if(!v.dataset.wait){v.dataset.wait='1';v.addEventListener('canplay',function(){tryPlay(v);});}
       }else{
+        v.dataset.vis='';
         if(!v.paused)v.pause();
-        /* fully off screen: hand the audio back so nothing plays out of sight */
+        /* fully off screen: reset to clean and silent */
         if(!en.isIntersecting){if(!v.muted)v.muted=true;if(v.controls)v.controls=false;}
       }
     });
   },{threshold:[0,.5]});
-  all.forEach(function(v){io.observe(v);});
+  all.forEach(function(v){pre.observe(v);io.observe(v);});
 }
 function toggleAll(b){
   var p=b.closest('.pn'), open=b.dataset.o!=='1';
