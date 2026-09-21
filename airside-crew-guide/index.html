@@ -1,0 +1,575 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex,nofollow">
+<title>MLB AIRSIDE &mdash; Content Guide</title>
+<style>
+:root{color-scheme:light;--ink:#0a0a0a;--mut:#6b7280;--ln:#e8e8ec;--bg:#f7f7f8;--cd:#fff;--ac:#c8102e;
+--fnt:"Inter","Helvetica Neue",-apple-system,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:rgba(200,16,46,.12)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fnt);
+font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wr{max-width:720px;margin:0 auto;
+padding:0 calc(14px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom))
+        calc(14px + env(safe-area-inset-left))}
+/* sticky chrome */
+.tp0{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;
+padding:calc(10px + env(safe-area-inset-top)) 0 0}
+.tp0 .wr{padding-bottom:0}
+.br0{display:flex;align-items:center;gap:8px;padding-bottom:9px}
+.mk{font:900 15px/1 var(--fnt);letter-spacing:-.05em;background:#fff;color:var(--ink);
+padding:5px 7px;border-radius:4px}
+.br0 .ti{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#ffffffa8}
+/* wraps rather than scrolls: every tab stays reachable, and there is no nested
+   scroll container inside the sticky header for iOS to lose taps in */
+.pl{display:flex;flex-wrap:nowrap;gap:6px;padding:0 0 10px}
+.pl label{flex:1 1 0;min-width:0;min-height:42px;padding:0 4px;cursor:pointer;
+display:flex;align-items:center;justify-content:center;text-decoration:none;
+border:1px solid #ffffff33;background:transparent;color:#fff;border-radius:999px;
+font:800 13px/1 var(--fnt);letter-spacing:-.01em;touch-action:manipulation;white-space:nowrap;
+-webkit-user-select:none;user-select:none}
+
+.pl button.on{background:#fff;color:var(--ink);border-color:#fff}
+.cf{display:flex;gap:9px;align-items:flex-start;background:#1a1a1c;color:#fff;
+border-left:3px solid var(--ac);border-radius:10px;padding:10px 12px;margin:12px 0 0;
+font-size:12.5px;line-height:1.45}
+.cf b{display:block;color:var(--ac);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+margin-bottom:2px}
+/* day head */
+.pn{display:block}
+.dh{padding:16px 0 10px;border-bottom:2px solid var(--ink);margin-bottom:13px}
+.dh h2{margin:0;font-size:25px;font-weight:900;letter-spacing:-.03em;display:inline}
+.dh span{font-size:14px;color:var(--mut);font-weight:600;margin-left:7px}
+.hero{margin:0 0 14px;padding:0;border:1px solid var(--ln);border-radius:14px;overflow:hidden;background:var(--cd)}
+.hero img{display:block;width:100%;height:auto}
+.hero figcaption{padding:9px 13px;font-size:12.5px;font-weight:800;color:var(--mut)}
+.xall{width:100%;min-height:44px;margin-bottom:11px;border:1px dashed var(--ln);
+background:transparent;border-radius:11px;font:800 13px/1 var(--fnt);color:var(--mut)}
+/* sessions as accordions */
+.ss{background:var(--cd);border:1px solid var(--ln);border-radius:14px;margin-bottom:9px;
+overflow:hidden}
+.ss summary{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-height:56px;
+padding:11px 14px;cursor:pointer;list-style:none}
+.ss summary::-webkit-details-marker{display:none}
+.sn{font-size:17px;font-weight:900;letter-spacing:-.025em;flex:1 1 auto;min-width:0}
+.ss i{flex:none;font-style:normal;font-size:10.5px;font-weight:900;letter-spacing:.04em;
+text-transform:uppercase;padding:4px 9px;border-radius:999px;color:#fff}
+.ss i.r{background:var(--ac)} .ss i.s{background:var(--ink)}
+.cv{flex:none;color:var(--mut);font-size:13px;transition:transform .18s}
+.ss[open] .cv{transform:rotate(180deg)}
+.sb{padding:0 14px 14px}
+/* blocks */
+.bl{margin:0 0 11px}
+.bl b{display:block;font-size:11.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+color:var(--ac);margin-bottom:6px}
+.bl ul{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.bl li{position:relative;padding-left:15px;font-size:15px;line-height:1.5;color:#26262b}
+.bl li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:2px;background:var(--ac)}
+.c,.pt{border:1px solid var(--ln);border-radius:12px;padding:12px;margin-bottom:9px;background:#fcfcfd}
+.ch{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px}
+.ch h4{margin:0;font-size:16px;font-weight:800;letter-spacing:-.02em}
+.tp{font-size:10px;font-weight:900;letter-spacing:.08em;padding:4px 8px;border-radius:5px;color:#fff}
+.tp.reel{background:var(--ac)} .tp.static{background:var(--ink)}
+.nt{font-size:11.5px;font-weight:700;color:var(--mut);border:1px solid var(--ln);
+border-radius:999px;padding:3px 9px}
+.pt>b{display:block;font-size:11.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+color:var(--ac);margin:7px 0 6px}
+.rm{display:inline-block;font-size:11.5px;font-weight:800;color:var(--ac);background:#c8102e12;
+border:1px solid #c8102e2e;border-radius:999px;padding:5px 11px;margin:0 0 8px}
+.rm.blk{display:block;margin-bottom:10px}
+.br{margin:0 0 10px;font-size:15px;line-height:1.5;color:#3f3f46}
+/* swipeable references */
+.car{margin:0 -14px;padding:0 14px;overflow-x:auto;
+scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.car::-webkit-scrollbar{display:none}
+.pt .car,.c .car{margin:0 -12px;padding:0 12px}
+.trk{display:flex;gap:10px;width:max-content}
+.sl{position:relative;flex:0 0 auto;width:72vw;max-width:300px;aspect-ratio:9/16;
+scroll-snap-align:center;border-radius:12px;overflow:hidden;background:#111;
+box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.sl .po,.sl .vd{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.sl[data-t="i"] .po{object-fit:cover}
+
+
+
+.sl .out{position:absolute;top:8px;right:8px;z-index:4;width:26px;height:26px;border-radius:50%;
+background:#0a0a0abf;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+a.sl{text-decoration:none}
+.sl .cap{position:absolute;left:0;right:0;bottom:0;padding:18px 10px 9px;color:#fff;
+font-size:11.5px;font-weight:800;line-height:1.35;
+background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.sl.nomedia::after{content:"Reference unavailable on this device 4 use the link below";
+position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+padding:18px;text-align:center;color:#fff;font-size:12.5px;font-weight:700;line-height:1.4}
+.sl.ig{background:var(--ink);text-decoration:none;display:flex}
+.igb{margin:auto;text-align:center;padding:14px;display:grid;gap:6px}
+.igt{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#ffffff99}
+.igc{font-size:15px;font-weight:800;color:#fff}
+.igo{font-size:12.5px;font-weight:700;color:var(--ac)}
+.cnt{margin:7px 0 0;font-size:11.5px;font-weight:800;color:var(--mut);
+font-variant-numeric:tabular-nums}
+.cnt em{font-style:normal;font-weight:600;opacity:.75;margin-left:5px}
+/* link buttons */
+.lk{margin-top:10px}
+.lkc{display:block;font-size:10.5px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;
+color:var(--mut);margin-bottom:7px}
+.lk a{display:flex;align-items:center;justify-content:space-between;min-height:46px;
+padding:0 15px;margin-bottom:7px;background:var(--cd);border:1px solid var(--ln);
+border-radius:11px;font-size:14px;font-weight:800;color:var(--ink);text-decoration:none}
+.lk a::after{content:"↗";font-size:13px;color:var(--ac)}
+.lk a:active{border-color:var(--ac)}
+/* guide */
+.wl{background:linear-gradient(152deg,#F1F4FF,#F8F0FC 46%,#FFF3EA);border:1px solid #E2E5F3;
+border-radius:16px;padding:18px 14px;margin-bottom:13px}
+.wl p{margin:0 0 11px;font-size:15px;line-height:1.62;color:#4C577D}
+.wl .lead{font-size:16.5px;color:#1F2A4E;font-weight:600}
+.wl .sg{display:block;margin-top:6px;font-size:22px;font-weight:900;letter-spacing:-.03em;color:#E07A3F}
+.nl{margin:0;padding:0;list-style:none;counter-reset:n;display:grid;gap:8px}
+.nl li{counter-increment:n;position:relative;padding:2px 0 2px 32px;font-size:14.5px;line-height:1.5;color:#3f3f46}
+.nl li::before{content:counter(n);position:absolute;left:0;top:3px;width:21px;height:21px;
+border-radius:50%;background:var(--ac);color:#fff;font-size:11px;font-weight:900;
+display:flex;align-items:center;justify-content:center}
+.fw{background:linear-gradient(152deg,#F1F4FF,#FFF3EA);border:1px solid #E2E5F3;
+border-radius:16px;padding:20px 18px}
+.fw p{margin:0;font-size:16.5px;line-height:1.6;color:#1F2A4E;font-weight:600}
+.fw span{display:block;margin-top:12px;font-size:22px;font-weight:900;letter-spacing:-.03em;color:#E07A3F}
+/* fullscreen viewer */
+#vw{position:fixed;inset:0;z-index:60;background:#000;display:none;
+align-items:center;justify-content:center}
+#vw.on{display:flex}
+#vw .stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:8px}
+#vw video,#vw img{max-width:100%;max-height:100%;object-fit:contain}
+#vw .x,#vw .pv,#vw .nx{position:absolute;min-width:48px;min-height:48px;border:0;
+background:#ffffff1f;color:#fff;border-radius:50%;font-size:19px;font-weight:800}
+#vw .x{top:14px;right:14px}
+#vw .pv{left:12px;top:50%;transform:translateY(-50%)}
+#vw .nx{right:12px;top:50%;transform:translateY(-50%)}
+#vw .pos{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff9;
+font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+ft{display:block;margin-top:22px;padding-top:12px;border-top:1px solid var(--ln);
+font-size:11.5px;color:var(--mut)}
+@media(prefers-reduced-motion:reduce){.cv{transition:none}}
+/* tabs: CSS-only, radio driven */
+.tbr{position:absolute;opacity:0;pointer-events:none;width:0;height:0}
+.pn{display:none}
+#t0:checked~.pg #guide,#t1:checked~.pg #before,#t2:checked~.pg #day,#t3:checked~.pg #posting{display:block}
+#t0:checked~.tp0 label[for=t0],#t1:checked~.tp0 label[for=t1],#t2:checked~.tp0 label[for=t2],#t3:checked~.tp0 label[for=t3]{background:#fff;color:var(--ink);border-color:#fff}
+/* session header: name, chip group, chevron pinned right */
+.ss summary{position:relative;padding-right:36px;row-gap:6px}
+.tg{display:flex;gap:5px;flex:none}
+.ss summary .cv{position:absolute;right:14px;top:50%;margin-top:-8px;height:16px;line-height:16px}
+.ss[open] summary .cv{transform:translateY(0) rotate(180deg)}
+/* index */
+.dh2{margin-top:4px}
+.ixw{display:grid;gap:8px;margin-bottom:6px}
+.ix{display:grid;grid-template-columns:1fr auto;grid-template-areas:"d cv" "s cv" "c cv";align-items:center;gap:4px 10px;background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:10px 14px 12px;cursor:pointer;min-height:56px}
+.ix:active{border-color:var(--ac)}
+.ixd{grid-area:d;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ixd b{font-size:17px;font-weight:900;letter-spacing:-.025em}
+.ixd span{font-size:13px;color:var(--mut);font-weight:600}
+.ixs{grid-area:s;font-size:13px;line-height:1.4;color:#3f3f46}
+.ixc{grid-area:c;display:flex;gap:5px;margin-top:2px}
+.ixc i{font-style:normal;font-size:10.5px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;color:#fff}
+.ixc i.r{background:var(--ac)} .ixc i.s{background:var(--ink)}
+.ix .cv{grid-area:cv;font-size:22px;line-height:1;margin-top:-3px}
+/* prev / next day */
+.dn{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.dn label{display:flex;align-items:center;min-height:48px;padding:0 18px;border:1px solid var(--ln);border-radius:12px;background:var(--cd);font:800 14px/1 var(--fnt);color:var(--ink);cursor:pointer;flex:1 1 0;justify-content:flex-start}
+.dn label.nx{justify-content:flex-end;background:var(--ink);color:#fff;border-color:var(--ink)}
+.dn span{flex:1 1 0}
+
+/* airside additions */
+.gl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}
+.gl div{background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;min-width:0}
+.gl b{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:3px}
+.gl span{display:block;font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1.3}
+.gl small{display:block;font-size:12px;font-weight:600;color:var(--mut);margin-top:2px;letter-spacing:0}
+.ss i.y,.ixc i.y{background:#6b7280}
+.tp.story{background:#6b7280}
+.no{flex:none;width:26px;height:26px;border-radius:50%;color:var(--ink);font:900 12.5px/26px var(--fnt);text-align:center;border:1px solid #0000000f}
+.no.p1{background:#F6CBD6} .no.p2{background:#CFE9DC} .no.p3{background:#CFDFF3} .no.p4{background:#F7E7B8} .no.p5{background:#E2D8F2} .no.p6{background:var(--ink);color:#fff}
+.bl li b{display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--ink);margin:0;font-weight:900}
+.bl li .tm{margin-right:6px;font-variant-numeric:tabular-nums}
+.nl li b{font-weight:900;color:var(--ink)}
+.nl li em{font-style:italic}
+</style></head><body>
+<input type="radio" name="tb" class="tbr" id="t0" checked><input type="radio" name="tb" class="tbr" id="t1"><input type="radio" name="tb" class="tbr" id="t2"><input type="radio" name="tb" class="tbr" id="t3">
+<div class="tp0"><div class="wr">
+  <div class="br0"><span class="mk">MLB</span><span class="ti">AIRSIDE &middot; Content Guide</span></div>
+  <nav class="pl"><label for="t0">Guide</label><label for="t1">Before</label><label for="t2">The Day</label><label for="t3">Posting</label></nav>
+</div></div>
+<div class="pg"><div class="wr">
+  <div class="cf"><span><b>Creator Content Guide</b>Confidential &mdash; for invited creators only. Please keep the stations a surprise until 8 Oct.</span></div>
+
+<!-- ============ GUIDE ============ -->
+<section class="pn" id="guide">
+<div class="dh"><h2>Content Guide</h2><span>Read before you arrive</span></div>
+<div class="wl">
+<p class="lead">Welcome to SEOUL, BY HAND &mdash; the opening of MLB AIRSIDE, Kai Tak.</p>
+<p>Nothing on the day is watched; everything is made. You'll pick a pastel mocktail, bedazzle your own cup with your team's logo, finish a cupcake served in a mini cap, check your fit in the league mirror &mdash; and watch your own mark stitched live into the cap you wear out.</p>
+<p>Bring your own sense and mood. Pastel, playful, K-fashion &mdash; and make it yours.</p>
+<span class="sg">See you at AIRSIDE!</span>
+</div>
+
+<div class="gl">
+<div><b>Date</b><span>Thu 8 Oct 2026</span></div>
+<div><b>Venue</b><span>MLB AIRSIDE &middot; Shop M24<br><small>AIRSIDE, Kai Tak &middot; Kai Tak MTR</small></span></div>
+<div><b>Your window</b><span>14:00 &ndash; 16:00<br><small>arrival slot from the agency &middot; ~90 min on site</small></span></div>
+<div><b>Wear &amp; bring</b><span>Seeded MLB look, head to toe<br><small>the Jelly Bag, packed with your things</small></span></div>
+</div>
+
+<details class="ss" open><summary><span class="sn">Shooting rules</span><span class="tg"><i class="r">6 rules</i></span><span class="cv">&#9662;</span></summary><div class="sb"><ol class="nl">
+<li>Only MLB in frame. Keep other brands' logos out &mdash; fashion brands especially.</li>
+<li>Here the cup and the cupcake <em>are</em> the content &mdash; shoot them freely. But drinks stay outside the store: park your cup in the caddy at the door before you step in.</li>
+<li>Hands first. Gems going on, cream piping, the needle running &mdash; close-ups travel further than a face.</li>
+<li>The concourse is public. Keep other shops' signage out of the background; your backdrops are the stand, the mirror, the storefront and the giant cap.</li>
+<li>MLB Hong Kong staff, Korea HQ and our photographers are on site. Ask anytime &mdash; and at the machine, follow the operator; hands stay clear of the needle.</li>
+<li>Want an extra piece from the store for a frame? Ask the staff.</li>
+</ol></div></details>
+
+<details class="ss" open><summary><span class="sn">Posting rules</span><span class="tg"><i class="r">7 rules</i></span><span class="cv">&#9662;</span></summary><div class="sb"><ol class="nl">
+<li>Tag <b>@mlbkorea_hk_mc</b> in every post and story.</li>
+<li>Add <b>#MLBHongKong #MLBAirside #SeoulByHand #bedazzled</b> to every feed post &mdash; carousels, reels, photos. Stories don't need them; use the <b>AIRSIDE</b> location sticker instead.</li>
+<li>Stories go up on the day &mdash; raw is fine, no editing needed.</li>
+<li>Carousel and reel within 3 days &mdash; by <b>Sun 11 Oct</b>. The proof post a week after the event &mdash; around <b>15 Oct</b>.</li>
+<li>Your contracted piece is in your agreement with the agency. Everything else in this guide is a menu &mdash; extra pieces are always welcome.</li>
+<li>If your content is strong, MLB Hong Kong will invite you as a collaborator. No pressure &mdash; we'll accept the ones that fit best, and your post stays on your profile either way&#8202;&#128522;</li>
+<li>Prefer not to be added as a collaborator? Please share the post to your story instead.</li>
+</ol></div></details>
+
+<div class="dh dh2"><h2>At a glance</h2><span>Tap a section</span></div>
+<div class="ixw">
+<label class="ix" for="t1"><span class="ixd"><b>Before</b></span><span class="ixs">The seeded look &middot; the Jelly Bag &middot; an optional tease</span><span class="ixc"><i class="y">1 Story</i></span><span class="cv">&#8250;</span></label>
+<label class="ix" for="t2"><span class="ixd"><b>The Day</b><span>Thu 8 Oct</span></span><span class="ixs">Seoul Stand &middot; Bedazzle &middot; Cupcake &middot; Fit Check &middot; Stitch &middot; Group frame</span><span class="ixc"><i class="r">3 Reel</i><i class="s">5 Static</i><i class="y">2 Story</i></span><span class="cv">&#8250;</span></label>
+<label class="ix" for="t3"><span class="ixd"><b>Posting</b></span><span class="ixs">Four pieces &middot; what goes live when &middot; caption kit</span><span class="ixc"><i class="s">1 Carousel</i><i class="r">1 Reel</i><i class="y">Stories</i><i class="s">1 Feed</i></span><span class="cv">&#8250;</span></label>
+</div>
+<div class="lk"><span class="lkc">Our account</span><a href="https://www.instagram.com/mlbkorea_hk_mc/" target="_blank" rel="noopener">@mlbkorea_hk_mc &middot; MLB Hong Kong &amp; Macau</a></div>
+<div class="dn"><span></span><label for="t1" class="nx">Before &#8250;</label></div>
+</section>
+
+<!-- ============ BEFORE ============ -->
+<section class="pn" id="before">
+<div class="dh"><h2>Before</h2><span>Seeded look &middot; Jelly Bag &middot; Tease</span></div>
+<button class="xall" onclick="toggleAll(this)">Expand all</button>
+
+<details class="ss" open><summary><span class="sn">The seeded look</span><span class="tg"><i class="s">Wear it</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What to know</b><ul>
+<li>One MLB look is on its way to you &mdash; the agency confirms the date.</li>
+<li>Wear it head to toe on 8 Oct, cap included. Tags off.</li>
+<li>Coming with a companion? They come in their own MLB.</li>
+<li>Fit issue? Tell the agency early and we'll swap.</li>
+</ul></div>
+</div></details>
+
+<details class="ss" open><summary><span class="sn">The Jelly Bag</span><span class="tg"><i class="s">Pack it</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<figure class="hero"><img src="media/jellybag.jpg" alt="The Jelly Bag — frosted-clear PVC tote with one MLB logo"><figcaption>The Jelly Bag &mdash; frosted-clear PVC, one MLB logo</figcaption></figure>
+<div class="bl"><b>What to know</b><ul>
+<li>Arrives before the day. Pack it with your own things and carry it in &mdash; a clear bag only reads on camera when it's full.</li>
+<li>What you make on the day goes in: the stitched cap, your bedazzled cup, a bedazzle set to keep.</li>
+<li>It's the D+7 post &mdash; the bag out in the city a week later.</li>
+</ul></div>
+</div></details>
+
+<details class="ss" open><summary><span class="sn">The tease</span><span class="tg"><i class="y">1 Story</i><i class="s">Optional</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<article class="c story"><div class="ch"><span class="tp story">STORY</span><h4>See you at MLB AIRSIDE</h4><span class="nt">Day before or morning of</span></div>
+<p class="br">The look laid out, the bag packed, the date. One frame. Keep the stations themselves a surprise until you're there.</p></article>
+</div></details>
+
+<details class="ss" open><summary><span class="sn">Checklist</span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>Before you leave home</b><ul>
+<li>Seeded look on, cap on.</li>
+<li>Jelly Bag packed.</li>
+<li>Phone charged, storage free &mdash; you'll shoot a lot of close-ups.</li>
+<li>Arrival time from the agency &mdash; the window is 14:00&ndash;16:00.</li>
+<li>Come a little hungry &#127856;</li>
+</ul></div>
+</div></details>
+
+<div class="dn"><label for="t0">&#8249; Guide</label><label for="t2" class="nx">The Day &#8250;</label></div>
+</section>
+
+<!-- ============ THE DAY ============ -->
+<section class="pn" id="day">
+<div class="dh"><h2>The Day</h2><span>Thu 8 Oct &middot; five stops &middot; ~90 min</span></div>
+<div class="bl"><b>Run of the day</b><ul>
+<li><b class="tm">14:00 &ndash; 16:00</b> Your window &mdash; arrive at your slot, walk the five stops.</li>
+<li><b class="tm">16:00</b> Group frame at the SEOUL STAND &mdash; everyone, cups and caps.</li>
+<li><b class="tm">17:00</b> The bar closes. The mirror and the machine stay.</li>
+</ul></div>
+<button class="xall" onclick="toggleAll(this)">Expand all</button>
+
+<details class="ss"><summary><span class="no p1">1</span><span class="sn">The Seoul Stand</span><span class="tg"><i class="s">1 Static</i><i class="y">1 Story</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What happens</b><ul>
+<li>Arrive in the seeded look. Pick one of four pastel batches &mdash; Pink, Mint, Sky, Butter &mdash; poured into a transparent cup.</li>
+<li>Take a stool at the ledge. The whole concourse walks past.</li>
+</ul></div>
+<figure class="hero"><img src="media/stand.jpg" alt="The SEOUL STAND — pastel mocktail bar with the bedazzle bar built in"><figcaption>The SEOUL STAND &mdash; mocktails one end, the bedazzle bar the other</figcaption></figure>
+<figure class="hero"><img src="media/menu.jpg" alt="Four pastel batches — Pink, Mint, Sky, Butter"><figcaption>The menu &mdash; four pastel batches, zero alcohol</figcaption></figure>
+<article class="c static"><div class="ch"><span class="tp static">STATIC</span><h4>The arrival frame</h4><span class="nt">Carousel lead slide</span></div>
+<p class="br">Full look at the storefront, cup in hand. Shoot it before the cup gets decorated &mdash; this is slide one.</p></article>
+<article class="c story"><div class="ch"><span class="tp story">STORY</span><h4>Pastel pick</h4><span class="nt">On the spot</span></div>
+<p class="br">The pour, your colour, first sip. One frame, tag us.</p></article>
+</div></details>
+
+<details class="ss"><summary><span class="no p2">2</span><span class="sn">The Bedazzle</span><span class="tg"><i class="r">1 Reel</i><i class="s">1 Static</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What happens</b><ul>
+<li>Team-logo sticker sheets, deco stickers and gems at the end of the counter. Decorate your cup &mdash; and put one pastel logo on your cheek.</li>
+<li>Then park the cup in the caddy at the door. No drinks near the product.</li>
+</ul></div>
+<figure class="hero"><img src="media/clubs.jpg" alt="Six club logos in pastel — NY, LA, B, P, D, SD"><figcaption>Six clubs, your pick &mdash; nothing defaults to New York</figcaption></figure>
+<article class="c reel"><div class="ch"><span class="tp reel">REEL</span><h4>Hands only &mdash; the bedazzle timelapse</h4><span class="nt">20&ndash;30 s</span></div>
+<p class="br">Phone propped, top-down, sped up. Gems go on, the logo lands, the cup turns. No face needed.</p>
+<div class="car"><div class="trk">
+<div class="sl" data-t="i" style="aspect-ratio:640/854"><img class="po" loading="lazy" alt="reference" src="media/cups.jpg"></div>
+</div></div><div class="cnt"><span class="now">1</span> / 1 <em>tap to enlarge</em></div>
+<div class="lk"><span class="lkc">Reference link</span><a href="https://www.instagram.com/explore/search/keyword/?q=%23bedazzled" target="_blank" rel="noopener">#bedazzled on Instagram</a></div></article>
+<article class="c static"><div class="ch"><span class="tp static">STATIC</span><h4>The cup, close</h4><span class="nt">Carousel detail slide</span></div>
+<p class="br">Cup in hand, cheek sticker in frame, the stand behind you.</p></article>
+</div></details>
+
+<details class="ss"><summary><span class="no p3">3</span><span class="sn">The Cupcake</span><span class="tg"><i class="y">1 Story</i><i class="s">1 Static</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What happens</b><ul>
+<li>Pipe the pastel cream, seat the edible team logo, sprinkles.</li>
+<li>Served in a mini team cap &mdash; it's yours to keep.</li>
+</ul></div>
+<figure class="hero"><img src="media/cupcake_spec.jpg" alt="Cupcake in a mini team cap — six teams, six creams"><figcaption>Six teams, six creams &mdash; the tray is a mini cap</figcaption></figure>
+<article class="c story"><div class="ch"><span class="tp story">STORY</span><h4>The pipe-down</h4><span class="nt">5 s clip or Boomerang</span></div>
+<p class="br">Cream going on, logo going in.</p></article>
+<article class="c static"><div class="ch"><span class="tp static">STATIC</span><h4>Cupcake in its cap</h4><span class="nt">Carousel slide</span></div>
+<p class="br">Cap tray in hand, logo facing camera. The most saveable frame of the day.</p>
+<div class="car"><div class="trk">
+<div class="sl" data-t="i" style="aspect-ratio:9/16"><img class="po" loading="lazy" alt="reference" src="media/cupcake.jpg"></div>
+</div></div><div class="cnt"><span class="now">1</span> / 1 <em>tap to enlarge</em></div>
+<div class="lk"><span class="lkc">Reference link</span><a href="https://www.instagram.com/p/Db9rxzgk1Gw/?img_index=7" target="_blank" rel="noopener">Cupcake reference</a></div></article>
+</div></details>
+
+<details class="ss"><summary><span class="no p4">4</span><span class="sn">The Fit Check</span><span class="tg"><i class="s">1 Static</i><i class="r">1 Reel</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What happens</b><ul>
+<li>The storefront mirror, dressed in pastel team logos with the centre clear for you.</li>
+<li>Shoot high-angle so the cap leads. Then step outside &mdash; the giant cap is your second spot.</li>
+</ul></div>
+<article class="c static"><div class="ch"><span class="tp static">STATIC</span><h4>Mirror fit check</h4><span class="nt">Carousel slide</span></div>
+<p class="br">Phone high, cap first, full look in the clear centre. Two or three angles.</p>
+<div class="car"><div class="trk">
+<div class="sl" data-t="i" style="aspect-ratio:800/1042"><img class="po" loading="lazy" alt="reference" src="media/mirror.jpg"></div>
+</div></div><div class="cnt"><span class="now">1</span> / 1 <em>tap to enlarge</em></div>
+<div class="lk"><span class="lkc">Reference link</span><a href="https://www.instagram.com/p/Dc29j4gkz7W/" target="_blank" rel="noopener">Event shooting reference</a></div></article>
+<figure class="hero"><img src="media/giantcap.jpg" alt="The giant MLB cap — 3D render, five views"><figcaption>The giant cap at the storefront &mdash; 2 m wide, your second backdrop</figcaption></figure>
+<article class="c reel"><div class="ch"><span class="tp reel">REEL</span><h4>OOTD transition</h4><span class="nt">Optional &middot; 10&ndash;15 s</span></div>
+<p class="br">Arriving look &rarr; stitched cap. Same spot, one cut.</p></article>
+</div></details>
+
+<details class="ss"><summary><span class="no p5">5</span><span class="sn">The Stitch</span><span class="tg"><i class="r">1 Reel</i><i class="s">1 Static</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What happens</b><ul>
+<li>Choose your mark. The machine stitches it live on the side panel of the cap you wear out.</li>
+<li>The finale &mdash; the last thing that happens to you is your own mark going on.</li>
+</ul></div>
+<figure class="hero"><img src="media/marks.jpg" alt="Two of the AIRSIDE marks — the finger heart and the sparkle"><figcaption>Two of the AIRSIDE marks &mdash; you pick yours at the machine</figcaption></figure>
+<article class="c reel"><div class="ch"><span class="tp reel">REEL</span><h4>The needle, close</h4><span class="nt">15&ndash;20 s &middot; real sound</span></div>
+<p class="br">Macro on the needle, then the reveal &mdash; cap on. Our team will help you hold the angle.</p>
+<div class="car"><div class="trk">
+<div class="sl" data-t="i" style="aspect-ratio:800/942"><img class="po" loading="lazy" alt="reference" src="media/needle.jpg"></div>
+<div class="sl" data-t="i" style="aspect-ratio:560/460"><img class="po" loading="lazy" alt="reference" src="media/stitch_station.jpg"></div>
+</div></div><div class="cnt"><span class="now">1</span> / 2 <em>swipe for more</em></div></article>
+<article class="c static"><div class="ch"><span class="tp static">STATIC</span><h4>Before / after</h4><span class="nt">Last two carousel slides</span></div>
+<p class="br">The plain panel, then your mark.</p></article>
+</div></details>
+
+<details class="ss"><summary><span class="no p6">&#9733;</span><span class="sn">The group frame</span><span class="tg"><i class="s">16:00</i></span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>What happens</b><ul>
+<li>Everyone at the SEOUL STAND with cups and caps. Our photographer shoots it &mdash; we'll send you the frame.</li>
+<li>Our team films the store tour afterwards. Nothing needed from you.</li>
+</ul></div>
+</div></details>
+
+<div class="dn"><label for="t1">&#8249; Before</label><label for="t3" class="nx">Posting &#8250;</label></div>
+</section>
+
+<!-- ============ POSTING ============ -->
+<section class="pn" id="posting">
+<div class="dh"><h2>Posting</h2><span>Four pieces &middot; what goes live when</span></div>
+<span class="rm blk">Your contracted piece is in your agency agreement. The rest is the menu.</span>
+
+<div class="pt"><div class="ch"><span class="tp static">CAROUSEL</span><h4>01 &middot; The Arrival</h4><span class="nt">By Sun 11 Oct</span></div>
+<p class="br">&ldquo;What I wore to MLB AIRSIDE.&rdquo; 5&ndash;8 slides.</p>
+<div class="bl"><b>Slides</b><ul>
+<li>Lead: full look at the storefront, cup in hand.</li>
+<li>Then: the cup close &middot; cupcake in its cap &middot; mirror fit check &middot; before / after stitch.</li>
+</ul></div></div>
+
+<div class="pt"><div class="ch"><span class="tp reel">REEL</span><h4>02 &middot; The Making</h4><span class="nt">By Sun 11 Oct</span></div>
+<p class="br">Hands only. 15&ndash;30 s.</p>
+<div class="bl"><b>Cut</b><ul>
+<li>Bedazzle timelapse &rarr; the running needle &rarr; the reveal, cap on.</li>
+<li>Trending audio is fine. Real machine sound is better.</li>
+</ul></div></div>
+
+<div class="pt"><div class="ch"><span class="tp story">STORIES</span><h4>03 &middot; The Taste</h4><span class="nt">On the day &middot; 3+ frames</span></div>
+<p class="br">The pour &middot; the pipe-down &middot; the cup, done.</p>
+<div class="bl"><b>Frames</b><ul>
+<li>Tag @mlbkorea_hk_mc + the AIRSIDE location sticker. Raw is fine.</li>
+</ul></div></div>
+
+<div class="pt"><div class="ch"><span class="tp static">FEED POST</span><h4>04 &middot; The Proof</h4><span class="nt">D+7 &middot; around 15 Oct</span></div>
+<p class="br">A week later, out in the city.</p>
+<div class="bl"><b>Frame</b><ul>
+<li>The Jelly Bag in use, the stitched cap in real life. The post that shows it lasted.</li>
+</ul></div></div>
+
+<details class="ss" open><summary><span class="sn">Caption kit</span><span class="cv">&#9662;</span></summary><div class="sb">
+<div class="bl"><b>Every feed post</b><ul>
+<li>Tag <b>@mlbkorea_hk_mc</b></li>
+<li><b>#MLBHongKong #MLBAirside #SeoulByHand #bedazzled</b></li>
+<li>Location: <b>AIRSIDE</b> &middot; say it's the new MLB store at Kai Tak</li>
+</ul></div>
+<div class="bl"><b>A starter, if you want one</b><ul>
+<li>&ldquo;Made this one myself &#128142; pastel mocktail, my team on my cup, and my own mark stitched into the cap at the new MLB AIRSIDE, Kai Tak. @mlbkorea_hk_mc #MLBHongKong #MLBAirside #SeoulByHand #bedazzled&rdquo;</li>
+</ul></div>
+</div></details>
+
+<div class="dn"><label for="t2">&#8249; The Day</label><span></span></div>
+</section>
+
+  <ft>References are format guides only &mdash; not for re-posting. MLB Hong Kong &amp; Macau &middot; Marketing.</ft>
+</div></div>
+<div id="vw"><div class="stage"></div>
+  <button class="x" aria-label="Close">&times;</button>
+  <button class="pv" aria-label="Previous">&#8249;</button>
+  <button class="nx" aria-label="Next">&#8250;</button>
+  <div class="pos"></div></div>
+
+<script>
+/* Everything structural - tabs, sessions, playback - is plain HTML and CSS.
+   What follows is enhancement only: the carousel counter and the tap-to-expand
+   viewer. If it never runs, the guide still works. */
+/* carousel position readout */
+function wireOne(c){
+  if(c.dataset.w) return; c.dataset.w=1;
+  var out=c.nextElementSibling;
+  if(!out||!out.classList.contains('cnt')) return;
+  var now=out.querySelector('.now');
+  c.addEventListener('scroll',function(){
+    var sl=c.querySelectorAll('.sl');
+    if(!sl.length) return;
+    var i=Math.round(c.scrollLeft/(sl[0].getBoundingClientRect().width+10))+1;
+    now.textContent=Math.min(Math.max(i,1),sl.length);
+  },{passive:true});
+}
+function wireCar(root){root.querySelectorAll('.car').forEach(wireOne);}
+
+/* full-screen viewer */
+var vw,stage,pos,list=[],at=0;
+function open_(sl){
+  var car=sl.closest('.car'); if(!car) return;
+  list=[].slice.call(car.querySelectorAll('.sl'));
+  at=list.indexOf(sl); show();
+  vw.classList.add('on'); document.body.style.overflow='hidden';
+}
+function show(){
+  var sl=list[at]; if(!sl) return;
+  stage.innerHTML='';
+  var m=sl.querySelector('video')||sl.querySelector('img');
+  if(m){
+    var c;
+    if(m.tagName==='VIDEO'){
+      c=document.createElement('video');
+      c.loop=true;c.playsInline=true;c.autoplay=true;c.controls=true;
+      c.setAttribute('playsinline','');c.setAttribute('webkit-playsinline','');
+      c.muted=false;c.src=m.currentSrc||m.src;
+      /* opened by a tap, so unmuted playback is permitted; retry muted if not */
+      var p=c.play();
+      if(p&&p.catch)p.catch(function(){c.muted=true;var q=c.play();if(q&&q.catch)q.catch(function(){});});
+    }else{
+      c=document.createElement('img'); c.src=m.src;
+    }
+    stage.appendChild(c);
+  }
+  pos.textContent=(at+1)+' / '+list.length;
+}
+function step(d){at=(at+d+list.length)%list.length;show();}
+function close_(){vw.classList.remove('on');stage.innerHTML='';document.body.style.overflow='';}
+
+/* tabs: keep the URL hash in sync so a day can be linked, and jump to top on switch */
+var TABS={t0:'guide',t1:'before',t2:'day',t3:'posting'};
+document.addEventListener('change',function(e){
+  if(!e.target.classList||!e.target.classList.contains('tbr')) return;
+  try{history.replaceState(null,'','#'+TABS[e.target.id]);}catch(err){}
+  try{window.scrollTo(0,0);}catch(err){}
+});
+(function(){var h=location.hash.replace('#','');for(var k in TABS){if(TABS[k]===h){var r=document.getElementById(k);if(r)r.checked=true;}}})();
+/* the same reference set appears on several days: embedded once, reused here */
+function dedupe(){
+  var map={};
+  document.querySelectorAll('video[data-h]').forEach(function(v){map[v.dataset.h]=v.getAttribute('src');});
+  document.querySelectorAll('video[data-dup]').forEach(function(v){var s=map[v.dataset.dup];if(s&&!v.getAttribute('src'))v.setAttribute('src',s);});
+}
+/* play only the clips actually on screen; everything else stays parked on its poster */
+/* clean frame by default: native controls come back on tap (markup keeps
+   the controls attribute so the guide still works without JS) */
+function setupTapControls(){
+  document.querySelectorAll('video.vd').forEach(function(v){
+    v.controls=false;
+    v.addEventListener('click',function(){ if(!v.controls) v.controls=true; });
+  });
+}
+function warm(v){
+  if(v.dataset.warm) return; v.dataset.warm='1';
+  v.preload='auto';
+  try{v.load();}catch(e){}
+}
+function tryPlay(v){
+  if(v.dataset.vis!=='1'||!v.paused) return;
+  var p=v.play();
+  if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(function(){});});
+}
+function setupLazy(){
+  var all=document.querySelectorAll('video.vd');
+  if(!('IntersectionObserver' in window)){all.forEach(function(v){v.autoplay=true;});return;}
+  /* start buffering clips shortly before they arrive, and only begin playback once
+     frames are ready - the poster holds instead of cutting to black on swipe */
+  var pre=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting) warm(en.target); });
+  },{rootMargin:'150% 400% 150% 400%'});
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      var v=en.target;
+      if(en.isIntersecting&&en.intersectionRatio>=.5){
+        v.dataset.vis='1';
+        warm(v);
+        if(v.readyState>=3){tryPlay(v);}
+        else if(!v.dataset.wait){v.dataset.wait='1';v.addEventListener('canplay',function(){tryPlay(v);});}
+      }else{
+        v.dataset.vis='';
+        if(!v.paused)v.pause();
+        /* fully off screen: reset to clean and silent */
+        if(!en.isIntersecting){if(!v.muted)v.muted=true;if(v.controls)v.controls=false;}
+      }
+    });
+  },{threshold:[0,.5]});
+  all.forEach(function(v){pre.observe(v);io.observe(v);});
+}
+function toggleAll(b){
+  var p=b.closest('.pn'), open=b.dataset.o!=='1';
+  p.querySelectorAll('details.ss').forEach(function(d){d.open=open;});
+  b.dataset.o=open?'1':'0'; b.textContent=open?'Collapse all':'Expand all';
+}
+document.addEventListener('DOMContentLoaded',function(){
+  dedupe(); setupLazy(); setupTapControls();
+  vw=document.getElementById('vw');
+  stage=vw.querySelector('.stage'); pos=vw.querySelector('.pos');
+  vw.querySelector('.x').onclick=close_;
+  vw.querySelector('.pv').onclick=function(e){e.stopPropagation();step(-1);};
+  vw.querySelector('.nx').onclick=function(e){e.stopPropagation();step(1);};
+  stage.onclick=close_;
+  document.addEventListener('keydown',function(e){
+    if(!vw.classList.contains('on'))return;
+    if(e.key==='Escape')close_(); if(e.key==='ArrowLeft')step(-1); if(e.key==='ArrowRight')step(1);});
+  document.querySelectorAll('.car').forEach(wireOne);
+  document.addEventListener('click',function(e){
+    if(!e.target.closest) return;
+    /* video has native controls (incl. fullscreen); only stills open the viewer */
+    var sl=e.target.closest('div.sl');
+    if(sl&&!sl.querySelector('video')&&sl.querySelector('img')){e.preventDefault();open_(sl);}
+  });
+});
+</script></body></html>
