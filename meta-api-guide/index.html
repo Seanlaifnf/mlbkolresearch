@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex,nofollow">
+<title>Meta API Connection Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: a stack of slide cards, one step per card, text left and a sketch of the screen right. "Present" shows one card at a time, full screen.
+   Everything inside a slide is sized in em so the whole slide scales with one font-size. Light theme only (house rule). */
+:root{
+  --ink:#0a0a0a; --ink2:#34353b; --muted:#6b7280; --line:#e4e4e9; --bg:#fafafa; --card:#ffffff; --tint:#f2f2f5;
+  --accent:#c8102e; --on-ink:#ffffff; --on-ink-muted:#b9bac2; --accent-on-ink:#ff6b81; --ink-card:#1b1b1f; --ink-line:#303036; --on-accent-muted:#ffe3e7;
+  --ok:#16803c; --ok-soft:#e9f5ee; --warn-soft:#fdecef; --wf:#d6d6dd; --wf-strong:#b4b5bf;
+  --font:"Inter","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,"Microsoft JhengHei",monospace;
+  color-scheme:light;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.pb *{box-sizing:border-box}
+.pb{padding-inline:20px;padding-block:0 40px}
+:where(.pb) p{margin:0}
+.pb code,.pb pre{font-family:var(--mono);font-variant-ligatures:none}
+.pb code{font-size:.86em;background:var(--tint);border-radius:.3em;padding:.08em .38em;overflow-wrap:anywhere}
+.pb kbd{font:600 .9em var(--font);background:var(--tint);border:1px solid var(--line);border-bottom-width:2px;border-radius:.35em;padding:0 .4em;white-space:nowrap}
+.pb :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pb.pb-only-en .l-zh{display:none}
+.pb.pb-only-zh .l-en{display:none}
+.pb .l-zh{color:var(--ink2)}
+
+/* top bar */
+.pb-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);color:var(--on-ink);margin-inline:-20px;padding:0 20px}
+.pb-nav-in{max-width:1120px;margin-inline:auto;display:flex;align-items:center;gap:14px;min-height:48px}
+.pb-brand{font-weight:800;font-size:12px;letter-spacing:.12em;white-space:nowrap}
+.pb-brand b{color:var(--accent);font-weight:800}
+.pb-hint{font-size:12.5px;color:var(--on-ink-muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-hint .l-zh{color:var(--on-ink-muted)}
+.pb-present{font:700 12.5px var(--font);background:var(--accent);color:var(--on-ink);border:0;border-radius:7px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.pb-lang{display:flex;border:1px solid #3a3b42;border-radius:7px;overflow:hidden;flex:none}
+.pb-lang button{font:600 12px var(--font);color:var(--on-ink-muted);background:transparent;border:0;padding:5px 9px;cursor:pointer}
+.pb-lang button[aria-pressed="true"]{background:var(--on-ink);color:var(--ink)}
+
+/* slides */
+.pb-deck{max-width:1120px;margin-inline:auto;display:grid;gap:16px;padding-block:20px}
+.pb-slide{position:relative;scroll-margin-top:60px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2.6em 2.8em 2.4em;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:2.6em;align-items:center;min-height:31em;font-size:15px}
+.pb-slide.sl-one{grid-template-columns:minmax(0,1fr);align-content:center}
+.pb-slide.sl-lw{grid-template-columns:minmax(0,6fr) minmax(0,5fr)}
+.sl-t,.sl-v{min-width:0}
+.sl-no{position:absolute;right:1.4em;top:1.15em;font:600 .75em var(--mono);color:var(--muted)}
+.sl-prog{display:flex;gap:.35em;margin-bottom:1em}
+.sl-prog i{font:600 .72em var(--mono);font-style:normal;width:1.95em;height:1.95em;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted)}
+.sl-prog i.is-done{background:var(--tint);color:var(--ink2)}
+.sl-prog i.is-now{background:var(--accent);border-color:var(--accent);color:var(--on-ink)}
+.sl-step{font:600 .78em var(--mono);letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+.sl-step .l-zh{color:var(--accent);letter-spacing:.04em;margin-left:.5em}
+.pb-slide h1{font-size:3.5em;line-height:1.04;font-weight:800;letter-spacing:-.025em;margin:.25em 0 .15em;text-wrap:balance}
+.pb-slide h1 .l-zh{display:block;font-size:.6em;font-weight:700;letter-spacing:0;margin-top:.25em}
+.pb-slide h2{font-size:2.3em;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:.2em 0 .3em;text-wrap:balance}
+.pb-slide h2 .l-zh{display:block;font-size:.72em;font-weight:700;letter-spacing:0;color:var(--ink);margin-top:.2em}
+.sl-lead{font-size:1.25em;max-width:44em;line-height:1.45}
+.sl-where{font:600 .85em var(--mono);color:var(--accent);overflow-wrap:anywhere}
+.sl-do{list-style:none;margin:1.1em 0 0;padding:0;display:grid;gap:.8em;counter-reset:n}
+.sl-do li{display:grid;grid-template-columns:1.9em minmax(0,1fr);gap:.75em;counter-increment:n;font-size:1.12em;line-height:1.4}
+.sl-do li::before{content:counter(n);width:1.85em;height:1.85em;border-radius:50%;background:var(--ink);color:var(--on-ink);font:600 .8em var(--mono);display:grid;place-items:center;margin-top:.08em}
+.sl-do p.l-en{font-weight:600}
+.sl-note{margin-top:1.1em;font-size:.95em;color:var(--muted)}
+.sl-note.l-zh{color:var(--muted);margin-top:.15em}
+.sl-note.l-en + .sl-note.l-zh{margin-top:.15em}
+
+/* cover */
+.sl-cover{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.sl-cover .sl-step{color:var(--accent-on-ink)}
+.sl-cover h1 .l-zh{color:var(--on-ink)}
+.sl-cover .sl-lead{color:var(--on-ink-muted)}
+.sl-cover .sl-no{color:var(--on-ink-muted)}
+.sl-agenda{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.6em;margin-top:2em}
+.sl-agenda div{background:var(--ink-card);border:1px solid var(--ink-line);border-radius:.8em;padding:.8em .9em}
+.sl-agenda b{display:block;font:600 .8em var(--mono);color:var(--accent-on-ink)}
+.sl-agenda span{display:block;font-weight:700;line-height:1.25;margin-top:.3em}
+.sl-agenda span.l-zh{font-weight:500;color:var(--on-ink-muted);font-size:.95em}
+
+/* idea flow */
+.sl-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.7em;margin-top:1.5em}
+.sl-node{position:relative;background:var(--tint);border-radius:.9em;padding:1.1em 1.1em 1.2em;min-width:0}
+.sl-node:not(:last-child)::after{content:"";position:absolute;right:-1.2em;top:50%;width:.6em;height:.6em;border-top:.16em solid var(--ink);border-right:.16em solid var(--ink);transform:translateY(-50%) rotate(45deg)}
+.sl-node b{display:block;font:600 .8em var(--mono);color:var(--accent)}
+.sl-node h3{margin:.3em 0 .35em;font-size:1.25em;line-height:1.2}
+.sl-node h3 .l-zh{display:block;font-weight:500;color:var(--ink2)}
+.sl-node p{font-size:.95em;color:var(--muted);line-height:1.4}
+.sl-node p.l-zh{color:var(--muted)}
+.sl-node.sl-key{background:var(--ink);color:var(--on-ink)}
+.sl-node.sl-key b{color:var(--accent-on-ink)}
+.sl-node.sl-key h3 .l-zh,.sl-node.sl-key p,.sl-node.sl-key p.l-zh{color:var(--on-ink-muted)}
+.sl-big{margin-top:1.4em;font-size:1.45em;font-weight:700;line-height:1.3}
+.sl-big.l-zh{margin-top:.15em;font-weight:500}
+
+/* before-you-start tiles */
+.sl-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1em;margin-top:1.5em}
+.sl-tile{background:var(--tint);border-radius:.9em;padding:1.3em 1.3em 1.4em;min-width:0}
+.sl-ck{width:2em;height:2em;border-radius:50%;background:var(--ok);color:var(--on-ink);display:grid;place-items:center;font-weight:800;margin-bottom:.9em}
+.sl-tile h3{margin:0;font-size:1.22em;line-height:1.3}
+.sl-tile h3 .l-zh{display:block;font-weight:500;margin-top:.3em}
+.sl-tile p{font-size:.95em;color:var(--muted);margin-top:.8em}
+.sl-tile p.l-zh{color:var(--muted);margin-top:.1em}
+
+/* screen sketches */
+.sk{background:var(--card);border:1px solid var(--line);border-radius:.9em;box-shadow:0 .5em 1.8em rgba(10,10,10,.08);overflow:hidden}
+.sk-bar{display:flex;align-items:center;gap:.5em;padding:.6em .9em;background:var(--tint);border-bottom:1px solid var(--line);font:600 .78em var(--mono);color:var(--muted)}
+.sk-bar i{width:.65em;height:.65em;border-radius:50%;background:var(--wf-strong);display:block;flex:none}
+.sk-bar span{margin-left:.3em;overflow-wrap:anywhere}
+.sk-body{padding:1.3em 1.4em 1.4em;display:grid;gap:1em}
+.sk-f{display:grid;gap:.3em;min-width:0}
+.sk-f > span{font-size:.74em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sk-in{position:relative;border:1px solid var(--wf-strong);border-radius:.5em;padding:.5em .75em;font-weight:600;background:var(--card);display:flex;justify-content:space-between;align-items:center;gap:.6em;min-width:0}
+.sk-in.sk-dd::after{content:"\25BE";color:var(--muted)}
+.sk-in.sk-mono{font-family:var(--mono);font-weight:400;letter-spacing:.08em;color:var(--muted)}
+.sk-dots{overflow:hidden;white-space:nowrap;min-width:0;flex:1}
+.sk-box{position:relative;border:1px solid var(--wf-strong);border-radius:.5em;padding:.6em .7em}
+.sk-hot{border-color:var(--accent);box-shadow:0 0 0 .14em var(--accent)}
+.sk-n{position:absolute;left:-.85em;top:-.85em;width:1.7em;height:1.7em;border-radius:50%;background:var(--accent);color:var(--on-ink);font:600 .8em var(--mono);display:grid;place-items:center;letter-spacing:0}
+.sk-btn{position:relative;justify-self:start;background:var(--ink);color:var(--on-ink);font-weight:700;border-radius:.5em;padding:.55em 1.1em}
+.sk-row{display:flex;gap:.8em;align-items:center;min-width:0}
+.sk-row > .sk-in{flex:1}
+.sk-two{display:grid;grid-template-columns:1fr 1fr;gap:.8em}
+.sk-chips{display:flex;flex-wrap:wrap;gap:.4em}
+.sk-chips code{font-size:.8em;border:1px solid var(--line);padding:.25em .55em}
+.sk-kv{display:flex;justify-content:space-between;gap:1em;font-size:.95em;padding:.15em 0;border-bottom:1px dashed var(--line)}
+.sk-kv span{color:var(--muted)}
+.sk-kv b{font-weight:600}
+.sk-kv b.sk-old{color:var(--muted);text-decoration:line-through}
+.sk-good{position:relative;background:var(--ok-soft);border:1px solid var(--ok);border-radius:.5em;padding:.6em .8em;font-weight:600}
+.sk-good small{display:block;font-weight:400;font-size:.9em;color:var(--ink2)}
+.sk-cap{font-size:.76em;color:var(--muted);margin-top:.7em}
+.sk-cap.l-zh{color:var(--muted);margin-top:0}
+.sk-yn{display:grid;grid-template-columns:1fr 1fr;gap:.8em;margin-top:1em}
+.sk-yn div{border-radius:.7em;padding:.9em 1em;min-width:0}
+.sk-yes{background:var(--ok-soft);border:1px solid var(--ok)}
+.sk-no{background:var(--warn-soft);border:1px solid var(--accent)}
+.sk-yn h3{margin:0 0 .35em;font-size:.8em;letter-spacing:.07em;text-transform:uppercase}
+.sk-yn h3 .l-zh{letter-spacing:.02em;margin-left:.4em;font-weight:500}
+.sk-yn p{font-weight:600;line-height:1.35}
+.sk-yn p.l-zh{font-weight:400}
+.sk-list{display:grid;gap:.55em}
+.sk-li{display:grid;grid-template-columns:1.6em minmax(0,1fr);gap:.6em;align-items:start;font-weight:600;line-height:1.3}
+.sk-li::before{content:"\2713";width:1.5em;height:1.5em;border-radius:50%;background:var(--ok);color:var(--on-ink);display:grid;place-items:center;font-size:.8em;font-weight:800;margin-top:.1em}
+.sk-li .l-zh{font-weight:400;margin-left:.5em}
+.sk-time{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.6em}
+.sk-day{position:relative;border:1px solid var(--line);border-radius:.8em;padding:.9em 1em 1em;background:var(--card);min-width:0}
+.sk-day:not(:last-child)::after{content:"";position:absolute;right:-1.15em;top:50%;width:.55em;height:.55em;border-top:.16em solid var(--ink);border-right:.16em solid var(--ink);transform:translateY(-50%) rotate(45deg)}
+.sk-day b{display:block;font:600 .8em var(--mono);color:var(--muted)}
+.sk-day strong{display:block;font-size:2.3em;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.sk-day p{font-weight:600;line-height:1.3;margin-top:.3em}
+.sk-day p.l-zh{font-weight:400;margin-top:0}
+.sk-day.sk-end{border-color:var(--accent);background:var(--warn-soft)}
+.sk-day.sk-end strong{color:var(--accent)}
+
+/* prompt card */
+.pb-pr{background:var(--card);border:1px solid var(--line);border-radius:.8em;overflow:hidden;min-width:0;margin-top:1em}
+.pb-pr-h{display:flex;align-items:center;gap:.5em;padding:.5em .6em .5em .9em;border-bottom:1px solid var(--line);background:var(--tint);flex-wrap:wrap}
+.pb-pr-h > span{font-size:.72em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pb-pr-h > span .l-zh{color:var(--muted);margin-left:.3em}
+.pb-tabs{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:.4em;overflow:hidden;background:var(--card)}
+.pb-tabs button{font:600 .8em var(--font);border:0;background:transparent;color:var(--muted);padding:.3em .7em;cursor:pointer}
+.pb-tabs button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink)}
+.pb-copy{font:600 .8em var(--font);border:1px solid var(--ink);background:var(--card);color:var(--ink);border-radius:.4em;padding:.3em .75em;cursor:pointer;white-space:nowrap}
+.pb-copy:hover{background:var(--ink);color:var(--on-ink)}
+.pb-copy.pb-done{background:var(--ok);border-color:var(--ok);color:var(--on-ink)}
+.pb-pr pre{margin:0;padding:.8em 1em;font-size:.8em;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* fixes */
+.sl-fix{display:grid;margin-top:.8em}
+.sl-fx{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:1.8em;padding:.55em 0;border-top:1px solid var(--line);font-size:1em;line-height:1.38}
+.sl-fx:first-child{border-top:0;padding:.2em 0 .6em;font-size:.76em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sl-fx:first-child .l-zh{color:var(--muted);letter-spacing:.03em;margin-left:.4em}
+.sl-fx p.l-en{font-weight:600}
+.sl-fx div:first-child p.l-en{font-weight:800}
+
+/* done */
+.sl-done{background:var(--accent);color:var(--on-ink);border-color:var(--accent)}
+.sl-done .sl-step,.sl-done .sl-no{color:var(--on-accent-muted)}
+.sl-done h1 .l-zh{color:var(--on-ink)}
+.sl-have{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7em;margin-top:1.8em}
+.sl-have div{border:1px solid rgba(255,255,255,.55);border-radius:.8em;padding:.9em 1em;font-weight:700;line-height:1.3}
+.sl-have .l-zh{display:block;font-weight:500;color:var(--on-accent-muted);margin-top:.2em}
+.sl-next{margin-top:1.6em;font-size:1.3em;font-weight:700}
+.sl-next.l-zh{margin-top:.15em;font-weight:500;color:var(--on-accent-muted)}
+
+.pb-foot{max-width:1120px;margin:8px auto 0;font-size:12.5px;color:var(--muted)}
+.pb-foot .l-zh{color:var(--muted)}
+
+/* present mode: one slide fills the screen */
+.pb-hud{display:none}
+.pb.is-present{padding:0}
+.pb.is-present .pb-nav,.pb.is-present .pb-foot{display:none}
+.pb.is-present .pb-deck{position:fixed;inset:0;z-index:30;max-width:none;margin:0;padding:0;display:block;background:var(--bg)}
+.pb.is-present .pb-slide{display:none}
+.pb.is-present .pb-slide.is-on{display:grid;position:absolute;inset:0 0 52px 0;border:0;border-radius:0;min-height:0;overflow:auto;padding:3vh 6vw;font-size:clamp(14px,min(1.5vw,2.5vh),31px);align-content:center}
+.pb.is-present .sl-no{display:none}
+.pb.is-present .pb-hud{display:flex;position:fixed;left:0;right:0;bottom:0;height:52px;z-index:31;background:var(--ink);color:var(--on-ink);align-items:center;gap:10px;padding:0 14px}
+.pb-hud button.pb-step{font:700 20px var(--font);width:40px;height:36px;border-radius:8px;border:1px solid #3a3b42;background:transparent;color:var(--on-ink);cursor:pointer}
+.pb-hud button.pb-step:disabled{opacity:.35;cursor:default}
+.pb-count{font:600 13px var(--mono);min-width:64px;text-align:center}
+.pb-prog{flex:1;height:5px;background:#2c2d33;border-radius:3px;overflow:hidden;min-width:40px}
+.pb-prog i{display:block;height:100%;width:0;background:var(--accent)}
+.pb-exit{font:600 12.5px var(--font);border:1px solid #3a3b42;background:transparent;color:var(--on-ink);border-radius:7px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+
+@media (max-width:860px){
+  .pb{padding-inline:14px}
+  .pb-nav{margin-inline:-14px;padding:0 14px}
+  .pb-brand,.pb-hint{display:none}
+  .pb-nav-in{justify-content:space-between}
+  .pb-slide,.pb-slide.sl-lw{grid-template-columns:minmax(0,1fr);padding:1.7em 1.3em 1.6em;gap:1.6em;min-height:0}
+  .pb-slide h1{font-size:2.5em}
+  .pb-slide h2{font-size:1.9em}
+  .sl-agenda{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sl-flow,.sl-tiles{grid-template-columns:minmax(0,1fr)}
+  .sl-node:not(:last-child)::after{right:auto;left:1.4em;top:auto;bottom:-1.15em;transform:rotate(135deg)}
+  .sl-have{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sl-fx{grid-template-columns:minmax(0,1fr);gap:.35em}
+  .sl-fx:first-child{display:none}
+  .sk-time{gap:1.3em}
+  .pb.is-present .pb-slide.is-on{padding:3vh 5vw;font-size:14px;align-content:start}
+}
+</style>
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="pb" id="pb">
+<nav class="pb-nav" aria-label="Guide controls">
+  <div class="pb-nav-in">
+    <span class="pb-brand">META API <b>GUIDE</b></span>
+    <span class="pb-hint"><span class="l-en">In Present mode: arrow keys to move, Esc to leave.</span> <span class="l-zh">簡報模式：方向鍵切換，Esc 離開。</span></span>
+    <button type="button" class="pb-present" id="pbPresent">▶ Present 簡報模式</button>
+    <div class="pb-lang" role="group" aria-label="Language">
+      <button type="button" data-lang="both" aria-pressed="true">EN + 中</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+    </div>
+  </div>
+</nav>
+
+<main class="pb-deck" id="deck">
+
+<!-- 1 cover -->
+<section class="pb-slide sl-one sl-cover" id="cover">
+  <div class="sl-t">
+    <span class="sl-step">MKT weekly report · setup guide</span>
+    <h1><span class="l-en">Connect the Meta API</span><span class="l-zh">連接 Meta API</span></h1>
+    <p class="sl-lead l-en">Six steps. At the end, Claude Code reads your Instagram and ad numbers by itself.</p>
+    <p class="sl-lead l-zh">六個步驟。完成後，Claude Code 就能自行讀取你們的 Instagram 與廣告數據。</p>
+    <div class="sl-agenda">
+      <div><b>1</b><span class="l-en">Create an app</span><span class="l-zh">建立 App</span></div>
+      <div><b>2</b><span class="l-en">Generate a token</span><span class="l-zh">產生 Token</span></div>
+      <div><b>3</b><span class="l-en">Make it last 60 days</span><span class="l-zh">延長為 60 天</span></div>
+      <div><b>4</b><span class="l-en">Save it on your PC</span><span class="l-zh">存在自己的電腦</span></div>
+      <div><b>5</b><span class="l-en">Let Claude check it</span><span class="l-zh">請 Claude 檢查</span></div>
+      <div><b>6</b><span class="l-en">Renew every 60 days</span><span class="l-zh">每 60 天更新</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 idea -->
+<section class="pb-slide sl-one" id="idea">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">The idea</span><span class="l-zh">概念</span></span>
+    <h2><span class="l-en">A token is a key</span><span class="l-zh">Token 就是一把鑰匙</span></h2>
+    <div class="sl-flow">
+      <div class="sl-node"><b>1</b><h3><span class="l-en">Your Facebook login</span><span class="l-zh">你的 Facebook 帳號</span></h3>
+        <p class="l-en">It proves you manage the accounts.</p><p class="l-zh">證明你有這些帳號的管理權限。</p></div>
+      <div class="sl-node"><b>2</b><h3><span class="l-en">Your app</span><span class="l-zh">你的 App</span></h3>
+        <p class="l-en">A container Meta asks you to create.</p><p class="l-zh">Meta 要求建立的一個容器。</p></div>
+      <div class="sl-node sl-key"><b>3</b><h3><span class="l-en">The token</span><span class="l-zh">Token</span></h3>
+        <p class="l-en">A long code, saved in a file on your PC.</p><p class="l-zh">一長串代碼，存在自己電腦的檔案裡。</p></div>
+      <div class="sl-node"><b>4</b><h3>Claude Code</h3>
+        <p class="l-en">Uses the token to read Instagram and ad numbers.</p><p class="l-zh">用 Token 讀取 Instagram 與廣告數據。</p></div>
+    </div>
+    <p class="sl-big l-en">Your password is never shared. Keep the token private, like a password.</p>
+    <p class="sl-big l-zh">不需要提供密碼。Token 請像密碼一樣保管。</p>
+  </div>
+</section>
+
+<!-- 3 before -->
+<section class="pb-slide sl-one" id="before">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Before you start</span><span class="l-zh">開始之前</span></span>
+    <h2><span class="l-en">Three things to check</span><span class="l-zh">先確認三件事</span></h2>
+    <div class="sl-tiles">
+      <div class="sl-tile"><div class="sl-ck" aria-hidden="true">✓</div>
+        <h3><span class="l-en">Instagram is a professional account, linked to a Facebook Page</span><span class="l-zh">Instagram 是專業帳號，並已連結 Facebook 粉絲專頁</span></h3>
+        <p class="l-en">Business or Creator both work.</p><p class="l-zh">商業帳號或創作者帳號皆可。</p></div>
+      <div class="sl-tile"><div class="sl-ck" aria-hidden="true">✓</div>
+        <h3><span class="l-en">Your Facebook login manages the Page, the Instagram account and the ad account</span><span class="l-zh">你的 Facebook 帳號可以管理粉絲專頁、Instagram 帳號與廣告帳號</span></h3>
+        <p class="l-en">If not, ask your Business admin.</p><p class="l-zh">如果不行，請企業管理平台管理員開權限。</p></div>
+      <div class="sl-tile"><div class="sl-ck" aria-hidden="true">✓</div>
+        <h3><span class="l-en">You can log in at developers.facebook.com</span><span class="l-zh">可以登入 developers.facebook.com</span></h3>
+        <p class="l-en">First time: click Get Started to register.</p><p class="l-zh">第一次使用：點 Get Started 完成註冊。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 step 1 -->
+<section class="pb-slide" id="step1" data-step="1">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Step 1 of 6</span><span class="l-zh">步驟 1</span></span>
+    <h2><span class="l-en">Create an app</span><span class="l-zh">建立 App</span></h2>
+    <div class="sl-where">developers.facebook.com → My Apps → Create App</div>
+    <ol class="sl-do">
+      <li><div><p class="l-en">Name it, for example <code>MKT Report TW</code>.</p><p class="l-zh">取一個名稱，例如 <code>MKT Report TW</code>。</p></div></li>
+      <li><div><p class="l-en">Use case: <kbd>Other</kbd>. App type: <kbd>Business</kbd>.</p><p class="l-zh">使用案例選 <kbd>Other</kbd>，類型選 <kbd>Business</kbd>。</p></div></li>
+      <li><div><p class="l-en">Connect your business portfolio, then click <kbd>Go to dashboard</kbd>.</p><p class="l-zh">連結你們的企業管理平台，再點 <kbd>Go to dashboard</kbd>。</p></div></li>
+    </ol>
+    <p class="sl-note l-en">Leave the app in Development mode. It only reads your own accounts, so it needs no app review.</p>
+    <p class="sl-note l-zh">App 保持 Development 模式即可。它只讀取你們自己的帳號，不需要送審。</p>
+  </div>
+  <div class="sl-v">
+    <div class="sk">
+      <div class="sk-bar"><i></i><i></i><i></i><span>developers.facebook.com · Create an app</span></div>
+      <div class="sk-body">
+        <div class="sk-f"><span>App name</span><div class="sk-in sk-hot"><b class="sk-n">1</b>MKT Report TW</div></div>
+        <div class="sk-two">
+          <div class="sk-f"><span>Use case</span><div class="sk-in sk-hot"><b class="sk-n">2</b>Other</div></div>
+          <div class="sk-f"><span>App type</span><div class="sk-in sk-hot">Business</div></div>
+        </div>
+        <div class="sk-f"><span>Business portfolio</span><div class="sk-in sk-dd sk-hot"><b class="sk-n">3</b>Your business</div></div>
+        <div class="sk-btn">Go to dashboard</div>
+      </div>
+    </div>
+    <p class="sk-cap l-en">A sketch of the screen, not a screenshot.</p><p class="sk-cap l-zh">畫面示意，非實際截圖。</p>
+  </div>
+</section>
+
+<!-- 5 step 2 -->
+<section class="pb-slide" id="step2" data-step="2">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Step 2 of 6</span><span class="l-zh">步驟 2</span></span>
+    <h2><span class="l-en">Generate a token</span><span class="l-zh">產生 Token</span></h2>
+    <div class="sl-where">developers.facebook.com → Tools → Graph API Explorer</div>
+    <ol class="sl-do">
+      <li><div><p class="l-en"><kbd>Meta App</kbd>: choose your app.</p><p class="l-zh">在 <kbd>Meta App</kbd> 選擇你的 App。</p></div></li>
+      <li><div><p class="l-en"><kbd>User or Page</kbd>: choose <kbd>Get User Access Token</kbd>.</p><p class="l-zh">在 <kbd>User or Page</kbd> 選 <kbd>Get User Access Token</kbd>。</p></div></li>
+      <li><div><p class="l-en">Add the six permissions.</p><p class="l-zh">加入六個權限。</p></div></li>
+      <li><div><p class="l-en">Click <kbd>Generate Access Token</kbd>. In the pop-up, select your Instagram account, Page and business.</p><p class="l-zh">點 <kbd>Generate Access Token</kbd>。在彈出視窗中選取 Instagram 帳號、粉絲專頁與企業管理平台。</p></div></li>
+    </ol>
+  </div>
+  <div class="sl-v">
+    <div class="sk">
+      <div class="sk-bar"><i></i><i></i><i></i><span>developers.facebook.com · Graph API Explorer</span></div>
+      <div class="sk-body">
+        <div class="sk-f"><span>Meta App</span><div class="sk-in sk-dd sk-hot"><b class="sk-n">1</b>MKT Report TW</div></div>
+        <div class="sk-f"><span>User or Page</span><div class="sk-in sk-dd sk-hot"><b class="sk-n">2</b>Get User Access Token</div></div>
+        <div class="sk-f"><span>Permissions</span><div class="sk-box sk-hot"><b class="sk-n">3</b><div class="sk-chips"><code>instagram_basic</code><code>instagram_manage_insights</code><code>pages_show_list</code><code>pages_read_engagement</code><code>ads_read</code><code>business_management</code></div></div></div>
+        <div class="sk-btn sk-hot"><b class="sk-n">4</b>Generate Access Token</div>
+      </div>
+    </div>
+    <p class="sk-cap l-en">A sketch of the screen, not a screenshot.</p><p class="sk-cap l-zh">畫面示意，非實際截圖。</p>
+  </div>
+</section>
+
+<!-- 6 step 3 -->
+<section class="pb-slide" id="step3" data-step="3">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Step 3 of 6</span><span class="l-zh">步驟 3</span></span>
+    <h2><span class="l-en">Make it last 60 days</span><span class="l-zh">延長為 60 天</span></h2>
+    <div class="sl-where">developers.facebook.com → Tools → Access Token Debugger</div>
+    <ol class="sl-do">
+      <li><div><p class="l-en">Paste the token and click <kbd>Debug</kbd>.</p><p class="l-zh">貼上 Token，點 <kbd>Debug</kbd>。</p></div></li>
+      <li><div><p class="l-en">Scroll to the bottom and click <kbd>Extend Access Token</kbd>.</p><p class="l-zh">捲到最下方，點 <kbd>Extend Access Token</kbd>。</p></div></li>
+      <li><div><p class="l-en">Copy the new token.</p><p class="l-zh">複製新的 Token。</p></div></li>
+    </ol>
+    <p class="sl-note l-en">Skip this step and the token stops working after about an hour.</p>
+    <p class="sl-note l-zh">如果跳過這一步，Token 大約一小時後就會失效。</p>
+  </div>
+  <div class="sl-v">
+    <div class="sk">
+      <div class="sk-bar"><i></i><i></i><i></i><span>developers.facebook.com · Access Token Debugger</span></div>
+      <div class="sk-body">
+        <div class="sk-row"><div class="sk-in sk-mono sk-hot"><b class="sk-n">1</b><span class="sk-dots">••••••••••••••••••••</span></div><div class="sk-btn">Debug</div></div>
+        <div>
+          <div class="sk-kv"><span>Valid</span><b>True</b></div>
+          <div class="sk-kv"><span>Expires</span><b class="sk-old">in about an hour</b></div>
+        </div>
+        <div class="sk-btn sk-hot"><b class="sk-n">2</b>Extend Access Token</div>
+        <div class="sk-good"><b class="sk-n">3</b>New token ••••••••••••<small>Expires in about 60 days</small></div>
+      </div>
+    </div>
+    <p class="sk-cap l-en">A sketch of the screen, not a screenshot.</p><p class="sk-cap l-zh">畫面示意，非實際截圖。</p>
+  </div>
+</section>
+
+<!-- 7 step 4 -->
+<section class="pb-slide" id="step4" data-step="4">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Step 4 of 6</span><span class="l-zh">步驟 4</span></span>
+    <h2><span class="l-en">Save it on your PC</span><span class="l-zh">存在自己的電腦</span></h2>
+    <div class="sl-where">Notepad → meta_token.txt</div>
+    <ol class="sl-do">
+      <li><div><p class="l-en">Paste the new token into Notepad.</p><p class="l-zh">把新的 Token 貼到記事本。</p></div></li>
+      <li><div><p class="l-en">Save it as <code>meta_token.txt</code>.</p><p class="l-zh">存成 <code>meta_token.txt</code>。</p></div></li>
+      <li><div><p class="l-en">Keep it in a private folder, for example <code>C:\Users\you\.mkt\</code>.</p><p class="l-zh">放在私人資料夾，例如 <code>C:\Users\you\.mkt\</code>。</p></div></li>
+    </ol>
+  </div>
+  <div class="sl-v">
+    <div class="sk">
+      <div class="sk-bar"><i></i><i></i><i></i><span>meta_token.txt · Notepad</span></div>
+      <div class="sk-body">
+        <div class="sk-in sk-mono"><span class="sk-dots">••••••••••••••••••••••••••••••••••••••••</span></div>
+      </div>
+    </div>
+    <div class="sk-yn">
+      <div class="sk-yes"><h3><span class="l-en">Keep it here</span><span class="l-zh">存放位置</span></h3>
+        <p class="l-en">A file on your own PC</p><p class="l-zh">自己電腦上的檔案</p></div>
+      <div class="sk-no"><h3><span class="l-en">Never paste it into</span><span class="l-zh">絕對不要貼到</span></h3>
+        <p class="l-en">Chat, email, the report, shared folders</p><p class="l-zh">聊天訊息、電子郵件、週報、共用資料夾</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 step 5 -->
+<section class="pb-slide sl-lw" id="step5" data-step="5">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Step 5 of 6</span><span class="l-zh">步驟 5</span></span>
+    <h2><span class="l-en">Let Claude check it</span><span class="l-zh">請 Claude 檢查</span></h2>
+    <div class="sl-where">Claude Code</div>
+    <p class="sl-note l-en">Paste this into Claude Code. It confirms the key works and finds your two account IDs.</p>
+    <p class="sl-note l-zh">把這段貼到 Claude Code。它會確認鑰匙可用，並找出兩個帳號 ID。</p>
+    <div class="pb-pr"><div class="pb-pr-h"><span>Prompt<span class="l-zh">指令</span></span><div class="pb-tabs"><button type="button" data-pl="en" aria-pressed="true">EN</button><button type="button" data-pl="zh" aria-pressed="false">中文</button></div><button type="button" class="pb-copy">Copy 複製</button></div>
+<pre data-pl="en">My Meta token is saved at &lt;path&gt;\meta_token.txt. Read it from the file and never print it.
+1) Check that it is valid. Tell me its permissions and its expiry date.
+2) Find my Instagram user ID and my ad account ID, and save both to config.json.
+3) Test it: pull yesterday's Instagram views and yesterday's ad spend.
+Tell me in plain words what worked and what did not.</pre>
+<pre data-pl="zh" hidden>我的 Meta Token 存在 &lt;路徑&gt;\meta_token.txt。請從檔案讀取，絕對不要把它顯示出來。
+1) 檢查 Token 是否有效，並告訴我它的權限與到期日。
+2) 找出我的 Instagram user ID 與廣告帳號 ID，兩個都存到 config.json。
+3) 測試：抓取昨天的 Instagram 觀看次數與昨天的廣告花費。
+請用白話告訴我哪些成功、哪些失敗。</pre></div>
+  </div>
+  <div class="sl-v">
+    <div class="sk">
+      <div class="sk-bar"><i></i><i></i><i></i><span>Claude Code · a good answer says</span></div>
+      <div class="sk-body">
+        <div class="sk-list">
+          <div class="sk-li"><span><span class="l-en">The token is valid</span><span class="l-zh">Token 有效</span></span></div>
+          <div class="sk-li"><span><span class="l-en">Its expiry date</span><span class="l-zh">到期日</span></span></div>
+          <div class="sk-li"><span><span class="l-en">All six permissions are there</span><span class="l-zh">六個權限都在</span></span></div>
+          <div class="sk-li"><span><span class="l-en">Instagram account found</span><span class="l-zh">找到 Instagram 帳號</span></span></div>
+          <div class="sk-li"><span><span class="l-en">Ad account found</span><span class="l-zh">找到廣告帳號</span></span></div>
+          <div class="sk-li"><span><span class="l-en">Test pull worked</span><span class="l-zh">測試抓取成功</span></span></div>
+        </div>
+      </div>
+    </div>
+    <p class="sk-cap l-en">If any line is missing, see “If it does not work”.</p><p class="sk-cap l-zh">如果少了任何一項，請看「如果不成功」。</p>
+  </div>
+</section>
+
+<!-- 9 step 6 -->
+<section class="pb-slide" id="step6" data-step="6">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Step 6 of 6</span><span class="l-zh">步驟 6</span></span>
+    <h2><span class="l-en">Renew every 60 days</span><span class="l-zh">每 60 天更新</span></h2>
+    <div class="sl-where">Calendar</div>
+    <ol class="sl-do">
+      <li><div><p class="l-en">Put a reminder in your calendar one week before the expiry date.</p><p class="l-zh">在到期日前一週設定行事曆提醒。</p></div></li>
+      <li><div><p class="l-en">Repeat steps 2 to 4.</p><p class="l-zh">重做步驟 2 到 4。</p></div></li>
+      <li><div><p class="l-en">Let Claude check the new token, as in step 5.</p><p class="l-zh">照步驟 5，請 Claude 檢查新的 Token。</p></div></li>
+    </ol>
+    <p class="sl-note l-en">The app stays. Only the token is renewed.</p>
+    <p class="sl-note l-zh">App 不用重建，只需要更新 Token。</p>
+  </div>
+  <div class="sl-v">
+    <div class="sk-time">
+      <div class="sk-day"><b>DAY</b><strong>0</strong><p class="l-en">Token made</p><p class="l-zh">建立 Token</p></div>
+      <div class="sk-day"><b>DAY</b><strong>53</strong><p class="l-en">Reminder</p><p class="l-zh">行事曆提醒</p></div>
+      <div class="sk-day sk-end"><b>DAY</b><strong>60</strong><p class="l-en">Token expires</p><p class="l-zh">Token 到期</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 fixes -->
+<section class="pb-slide sl-one" id="fix">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">If it does not work</span><span class="l-zh">如果不成功</span></span>
+    <h2><span class="l-en">Four common problems</span><span class="l-zh">四個常見問題</span></h2>
+    <div class="sl-fix">
+      <div class="sl-fx"><div><span class="l-en">You see</span><span class="l-zh">現象</span></div><div><span class="l-en">Do this</span><span class="l-zh">處理方式</span></div></div>
+      <div class="sl-fx"><div><p class="l-en">Claude finds no Instagram account</p><p class="l-zh">Claude 找不到 Instagram 帳號</p></div>
+        <div><p class="l-en">Link Instagram to a Page in Instagram settings. Then redo step 2 and select it in the pop-up.</p><p class="l-zh">先在 Instagram 設定中連結粉絲專頁，再重做步驟 2，並在彈出視窗中選取。</p></div></div>
+      <div class="sl-fx"><div><p class="l-en">A permission error</p><p class="l-zh">出現權限錯誤</p></div>
+        <div><p class="l-en">Add all six permissions and redo step 2. If it still fails, ask your Business admin for access.</p><p class="l-zh">六個權限都加上後重做步驟 2。如果還是不行，請企業管理平台管理員開權限。</p></div></div>
+      <div class="sl-fx"><div><p class="l-en">“Session has expired” or “invalid token”</p><p class="l-zh">顯示工作階段已過期或 Token 無效</p></div>
+        <div><p class="l-en">The token was not extended, or 60 days have passed. Redo steps 2 to 4.</p><p class="l-zh">Token 沒有延長，或已超過 60 天。重做步驟 2 到 4。</p></div></div>
+      <div class="sl-fx"><div><p class="l-en">No Extend Access Token button</p><p class="l-zh">找不到 Extend Access Token 按鈕</p></div>
+        <div><p class="l-en">Ask Claude to extend the token. It needs the App ID and App Secret from App settings → Basic. Save them in a file on your PC and never paste them into the chat.</p><p class="l-zh">請 Claude 幫忙延長 Token。它需要 App settings → Basic 裡的 App ID 與 App Secret。請存成自己電腦上的檔案，不要貼進對話。</p></div></div>
+    </div>
+    <p class="sl-note l-en">Button names are given in English. If your developer site is in Chinese, the buttons sit in the same places.</p>
+    <p class="sl-note l-zh">按鈕名稱以英文介面為準。如果你的開發者網站是中文介面，按鈕位置相同。</p>
+  </div>
+</section>
+
+<!-- 11 done -->
+<section class="pb-slide sl-one sl-done" id="done">
+  <div class="sl-t">
+    <span class="sl-step"><span class="l-en">Done</span><span class="l-zh" style="color:inherit">完成</span></span>
+    <h1><span class="l-en">You are connected</span><span class="l-zh">連接完成</span></h1>
+    <div class="sl-have">
+      <div><span class="l-en">An app on Meta's developer site</span><span class="l-zh">Meta 開發者網站上的 App</span></div>
+      <div><span class="l-en">A 60-day token in a file on your PC</span><span class="l-zh">存在自己電腦裡的 60 天 Token</span></div>
+      <div><span class="l-en">config.json with your two account IDs</span><span class="l-zh">含兩個帳號 ID 的 config.json</span></div>
+      <div><span class="l-en">A calendar reminder to renew</span><span class="l-zh">提醒更新的行事曆</span></div>
+    </div>
+    <p class="sl-next l-en">Next: the first build of your weekly report.</p>
+    <p class="sl-next l-zh">下一步：製作第一份週報。</p>
+  </div>
+</section>
+
+</main>
+
+<div class="pb-hud" id="pbHud">
+  <button type="button" class="pb-step" id="pbPrev" aria-label="Previous slide">‹</button>
+  <button type="button" class="pb-step" id="pbNext" aria-label="Next slide">›</button>
+  <span class="pb-count" id="pbCount">1 / 11</span>
+  <div class="pb-prog" aria-hidden="true"><i id="pbBar"></i></div>
+  <div class="pb-lang" role="group" aria-label="Language">
+    <button type="button" data-lang="both" aria-pressed="true">EN + 中</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+  <button type="button" class="pb-exit" id="pbExit">Exit 結束</button>
+</div>
+
+<footer class="pb-foot">
+  <p class="l-en">Prepared by MLB HK Marketing, October 2026. Meta changes its developer site from time to time, so a button may have moved.</p>
+  <p class="l-zh">由 MLB HK 行銷團隊整理，2026 年 10 月。Meta 不時會調整開發者網站，按鈕位置可能有所變動。</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById('pb');
+  var slides=[].slice.call(root.querySelectorAll('.pb-slide'));
+  var cur=0, wentFull=false;
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+
+  /* slide numbers and the six-step tracker */
+  slides.forEach(function(s,i){
+    var n=document.createElement('span');n.className='sl-no';n.textContent=(i+1)+' / '+slides.length;s.appendChild(n);
+    var st=+s.getAttribute('data-step');
+    if(st){var p=document.createElement('div');p.className='sl-prog';p.setAttribute('aria-hidden','true');
+      for(var k=1;k<=6;k++){var b=document.createElement('i');b.textContent=k;if(k===st)b.className='is-now';else if(k<st)b.className='is-done';p.appendChild(b);}
+      var t=s.querySelector('.sl-t');t.insertBefore(p,t.firstChild);}
+  });
+
+  /* language */
+  var langBtns=root.querySelectorAll('.pb-lang button');
+  function setPrompt(card,l){
+    [].forEach.call(card.querySelectorAll('pre'),function(p){p.hidden=p.dataset.pl!==l;});
+    [].forEach.call(card.querySelectorAll('.pb-tabs button'),function(b){b.setAttribute('aria-pressed',String(b.dataset.pl===l));});
+  }
+  function setLang(l,keep){
+    root.classList.toggle('pb-only-en',l==='en');
+    root.classList.toggle('pb-only-zh',l==='zh');
+    [].forEach.call(langBtns,function(b){b.setAttribute('aria-pressed',String(b.dataset.lang===l));});
+    [].forEach.call(root.querySelectorAll('.pb-pr'),function(p){setPrompt(p,l==='zh'?'zh':'en');});
+    if(!keep)store('meta-guide-lang',l);
+  }
+  [].forEach.call(langBtns,function(b){b.addEventListener('click',function(){setLang(b.dataset.lang);});});
+  [].forEach.call(root.querySelectorAll('.pb-tabs button'),function(b){
+    b.addEventListener('click',function(){setPrompt(b.closest('.pb-pr'),b.dataset.pl);});
+  });
+
+  /* copy */
+  function flash(btn,ok){
+    var old=btn.textContent;btn.textContent=ok?'Copied 已複製':'Select and copy 請手動複製';btn.classList.toggle('pb-done',ok);
+    setTimeout(function(){btn.textContent=old;btn.classList.remove('pb-done');},1600);
+  }
+  function fallback(text,btn,node){
+    var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+    var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+    ta.remove();
+    if(!ok){var r=document.createRange();r.selectNodeContents(node);var s=window.getSelection();s.removeAllRanges();s.addRange(r);}
+    flash(btn,ok);
+  }
+  [].forEach.call(root.querySelectorAll('.pb-copy'),function(btn){
+    btn.addEventListener('click',function(){
+      var node=btn.closest('.pb-pr').querySelector('pre:not([hidden])'),text=node.textContent;
+      try{navigator.clipboard.writeText(text).then(function(){flash(btn,true);},function(){fallback(text,btn,node);});}
+      catch(e){fallback(text,btn,node);}
+    });
+  });
+
+  /* present mode */
+  var prev=document.getElementById('pbPrev'),next=document.getElementById('pbNext'),count=document.getElementById('pbCount'),bar=document.getElementById('pbBar');
+  function on(){return root.classList.contains('is-present');}
+  function show(i){
+    cur=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach(function(s,k){s.classList.toggle('is-on',k===cur);});
+    slides[cur].scrollTop=0;
+    count.textContent=(cur+1)+' / '+slides.length;
+    bar.style.width=((cur+1)/slides.length*100)+'%';
+    prev.disabled=cur===0;next.disabled=cur===slides.length-1;
+  }
+  function nearest(){
+    for(var i=0;i<slides.length;i++){if(slides[i].getBoundingClientRect().bottom>120)return i;}
+    return 0;
+  }
+  function enter(){
+    var i=nearest();
+    root.classList.add('is-present');show(i);
+    try{var el=document.documentElement,p=el.requestFullscreen&&el.requestFullscreen();if(p&&p.then)p.then(function(){wentFull=true;},function(){});}catch(e){}
+  }
+  function leave(){
+    root.classList.remove('is-present');
+    slides.forEach(function(s){s.classList.remove('is-on');});
+    try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen();}catch(e){}
+    wentFull=false;
+    slides[cur].scrollIntoView({block:'start'});
+  }
+  document.getElementById('pbPresent').addEventListener('click',enter);
+  document.getElementById('pbExit').addEventListener('click',leave);
+  prev.addEventListener('click',function(){show(cur-1);});
+  next.addEventListener('click',function(){show(cur+1);});
+  document.addEventListener('keydown',function(e){
+    if(!on())return;
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){if(e.target&&e.target.tagName==='BUTTON'&&(k===' '||k==='Enter'))return;e.preventDefault();show(cur+1);}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();show(cur-1);}
+    else if(k==='Home'){e.preventDefault();show(0);}
+    else if(k==='End'){e.preventDefault();show(slides.length-1);}
+    else if(k==='Escape'){leave();}
+  });
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&wentFull&&on())leave();});
+
+  var l=store('meta-guide-lang');
+  if(l==='en'||l==='zh')setLang(l,true);
+})();
+</script>
+</body>
+</html>
