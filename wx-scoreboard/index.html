@@ -8,68 +8,79 @@
 <meta name="theme-color" content="#0d1626">
 <title>MLB · Save the White Christmas · Live scoreboard</title>
 <meta property="og:title" content="MLB · Save the White Christmas · Live scoreboard">
-<meta property="og:description" content="Clear all 10 stages, post your score card and climb the board.">
+<meta property="og:description" content="Ride 10 stages, share your score card and climb the board.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=Noto+Sans+HK:wght@400;500;700;900&display=swap">
 <link rel="preload" as="image" href="img/hero.webp">
 <style>
 /* Public live scoreboard · MLB HK "Save the White Christmas". Reads board.json (written by the team console), refreshes every minute.
-   Look: winter-race results sheet — one grotesk (Archivo, tabular figures), sentence case, hairlines; the game art and real products do the decorating.
-   EN / 中文 via the toggle (remembered per device, defaults to the phone language). Light page, locked (house rule). */
+   Order: hero → top three (navy band) → prize → section bar → ranking → weekly beanie → how to join → rules.
+   Wording follows the HK edit of the game (written Chinese / plain English). EN / 中文 toggle, remembered per device. Light page (house rule). */
 :root{
   color-scheme:light only;
-  --paper:#f4f3ef; --card:#fff; --ink:#111318; --sub:#6b6e75; --faint:#a5a7ad; --line:#dedbd3; --night:#0d1626; --night2:#16233a;
+  --paper:#f4f3ef; --card:#fff; --ink:#111318; --sub:#6b6e75; --faint:#a5a7ad; --line:#dedbd3; --line2:#ecebe6; --night:#0d1626; --night2:#152238;
   --ice:#a9d4f5; --ice-ink:#1d5e8f; --live:#2fd16b; --up:#15803d; --you:#eef6fd;
   --sans:"Archivo","Noto Sans HK",-apple-system,"Helvetica Neue",Arial,"PingFang HK","Microsoft JhengHei",sans-serif;
   --hk:"Noto Sans HK","PingFang HK","Microsoft JhengHei","Archivo",sans-serif;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+html{scroll-behavior:smooth}
 html,body{margin:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 html[lang="zh-HK"] body{font-family:var(--hk)}
 .num{font-family:"Archivo",sans-serif;font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum","lnum"}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 a{color:inherit}
-.page{max-width:560px;margin:0 auto;background:var(--paper);min-height:100vh}
+.page{max-width:560px;margin:0 auto;background:var(--paper);min-height:100vh;padding-bottom:84px}
 
 /* hero */
-.hero{position:relative;height:min(112vw,500px);overflow:hidden;background:var(--night);color:#fff}
+.hero{position:relative;height:min(108vw,480px);overflow:hidden;background:var(--night);color:#fff}
 .hero .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,22,38,.35) 0,rgba(13,22,38,0) 22%,rgba(13,22,38,.12) 44%,rgba(13,22,38,.78) 70%,var(--night) 100%)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,22,38,.35) 0,rgba(13,22,38,0) 22%,rgba(13,22,38,.12) 44%,rgba(13,22,38,.8) 72%,var(--night) 100%)}
 #snow{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .htop{position:absolute;left:20px;right:20px;top:18px;z-index:2;display:flex;justify-content:space-between;align-items:center}
 .htop img{height:22px;width:auto;display:block;filter:drop-shadow(0 1px 6px rgba(0,0,0,.25))}
-.lang{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;background:rgba(13,22,38,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:6px;padding:6px 10px}
+.lang{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;background:rgba(13,22,38,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:6px;padding:6px 10px}
 .lang button{color:rgba(255,255,255,.55);padding:1px 0;border-bottom:2px solid transparent;font-family:var(--sans)}
 .lang button.on{color:#fff;border-bottom-color:#fff}
 .lang span{color:rgba(255,255,255,.35);font-weight:400}
-.htxt{position:absolute;left:20px;right:20px;bottom:20px;z-index:2}
+.htxt{position:absolute;left:20px;right:20px;bottom:18px;z-index:2}
 .status{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.88)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 0 rgba(47,209,107,.6);animation:beat 2s ease-out infinite;flex:none}
 .dot.off{background:#9aa3b2;animation:none}
 .dot.fin{background:var(--ice);animation:none}
 @keyframes beat{70%{box-shadow:0 0 0 8px rgba(47,209,107,0)}100%{box-shadow:0 0 0 0 rgba(47,209,107,0)}}
-.kicker{margin:16px 0 0;font-size:14px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.82)}
+.kicker{margin:14px 0 0;font-size:14px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.82)}
 .kicker b{font-weight:700;color:#fff;text-shadow:0 0 14px rgba(169,212,245,.9)}
 h1{margin:4px 0 0;font-size:clamp(40px,11.5vw,54px);line-height:.95;font-weight:800;font-stretch:112%;letter-spacing:-.018em}
 html[lang="zh-HK"] h1{font-family:var(--hk);font-weight:900;letter-spacing:.01em;font-stretch:normal}
-.cdl{margin:12px 0 0;font-size:15px;font-weight:500;color:rgba(255,255,255,.85)}
+.cdl{margin:10px 0 0;font-size:15px;font-weight:500;color:rgba(255,255,255,.85)}
 .cdl b{font-weight:700;color:#fff}
 
-/* leader band continues the night of the hero */
+/* top three — navy band continuing the hero */
 .band{background:var(--night);color:#fff;padding:0 20px 22px}
-.lead{border-top:1px solid rgba(255,255,255,.14);padding-top:18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;align-items:end}
-.lead .tag{grid-column:1/-1;font-size:13px;font-weight:700;color:var(--ice);display:flex;align-items:center;gap:8px}
-.lead .rk{font-size:92px;line-height:.78;font-weight:800;font-stretch:118%;color:#fff;letter-spacing:-.04em}
+.lead{border-top:1px solid rgba(255,255,255,.14);padding-top:16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;align-items:end}
+.lead .tag{grid-column:1/-1;font-size:13px;font-weight:700;color:var(--ice)}
+.lead .rk{font-size:92px;line-height:.78;font-weight:800;font-stretch:118%;letter-spacing:-.04em}
 .lead .who{min-width:0}
-.lead .h{font-size:19px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.lead .h{font-size:19px;font-weight:700;overflow:hidden;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.lead .h .hn{overflow:hidden;text-overflow:ellipsis}
 .lead .s{font-size:52px;line-height:1;font-weight:800;letter-spacing:-.02em;margin-top:4px}
 .lead .m{grid-column:1/-1;display:flex;gap:14px;font-size:13px;color:rgba(255,255,255,.72);margin-top:10px}
 .lead .m span+span{padding-left:14px;border-left:1px solid rgba(255,255,255,.2)}
-.ck{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--up)}
-.band .ck{color:#7ee2a6}
+.runs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.run{background:var(--night2);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:12px 14px;min-width:0}
+.run .top{display:flex;justify-content:space-between;align-items:baseline}
+.run .rk{font-size:22px;font-weight:800;color:rgba(255,255,255,.5);line-height:1}
+.run .tag{font-size:12px;font-weight:700;color:var(--ice)}
+.run .h{font-size:15px;font-weight:700;margin-top:8px;overflow:hidden;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.run .h .hn{overflow:hidden;text-overflow:ellipsis}
+.run .s{font-size:30px;line-height:1.05;font-weight:800;letter-spacing:-.015em;margin-top:2px}
+.run .g{font-size:12.5px;color:rgba(255,255,255,.6);margin-top:3px}
+.run.empty .h,.run.empty .s{color:rgba(255,255,255,.35)}
+.ck{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#7ee2a6;flex:none}
 .ck svg{width:14px;height:14px;flex:none}
 .pre .big{font-size:30px;font-weight:800;font-stretch:108%;letter-spacing:-.01em;margin-top:2px}
 html[lang="zh-HK"] .pre .big{font-family:var(--hk);font-weight:900}
@@ -78,47 +89,42 @@ html[lang="zh-HK"] .pre .big{font-family:var(--hk);font-weight:900}
 .digits b{display:block;font-size:42px;line-height:1;font-weight:800;letter-spacing:-.02em}
 .digits span{font-size:12.5px;color:rgba(255,255,255,.6)}
 
-main{padding:0 16px 30px}
-.note{margin:14px 0 0;background:#fff4c7;color:#5d4b00;border-radius:6px;padding:9px 12px;font-size:13px;font-weight:600}
-.lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:28px 4px 10px;border-bottom:1.5px solid var(--ink);padding-bottom:7px}
-.lab h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.005em}
-.lab span{font-size:13px;color:var(--sub);text-align:right}
-
-/* runners-up */
-.runs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.run{background:var(--card);border-radius:8px;padding:12px 14px;min-width:0;position:relative}
-.run .rk{font-size:15px;font-weight:800;color:var(--faint)}
-.run .tag{font-size:12px;font-weight:700;color:var(--ice-ink)}
-.run .h{font-size:15px;font-weight:700;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:5px}
-.run .s{font-size:30px;line-height:1.05;font-weight:800;letter-spacing:-.015em;margin-top:2px}
-.run .g{font-size:12.5px;color:var(--sub);margin-top:2px}
-.run.empty .h,.run.empty .s{color:var(--faint)}
-
 /* prize */
-.prize{background:var(--card);border-radius:8px;margin-top:10px;padding:14px 14px 12px}
-.prize .t{font-size:14px;font-weight:800}
+.prize{background:var(--card);margin:0;padding:16px 20px 14px;border-bottom:1px solid var(--line)}
+.prize .t{font-size:15px;font-weight:800}
 .prize .d{font-size:13px;color:var(--sub);margin-top:2px}
 .prize .it{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
 .prize figure{margin:0;text-align:center}
 .prize img{width:100%;aspect-ratio:1;object-fit:contain;display:block;mix-blend-mode:multiply}
 .prize figcaption{font-size:12px;color:var(--sub);margin-top:2px}
 
-/* find + table */
-.find{display:flex;align-items:center;gap:10px;margin-top:20px;border-bottom:1px solid var(--line);padding:0 4px 8px}
+/* section bar */
+.snav{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);background:rgba(244,243,239,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.snav a{display:block;text-align:center;text-decoration:none;font-size:14px;font-weight:700;color:var(--sub);padding:13px 4px 11px;border-bottom:2px solid transparent}
+.snav a.on{color:var(--ink);border-bottom-color:var(--ink)}
+
+main{padding:0 16px}
+.note{margin:14px 0 0;background:#fff4c7;color:#5d4b00;border-radius:6px;padding:9px 12px;font-size:13px;font-weight:600}
+.sec{scroll-margin-top:52px}
+.lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:26px 4px 10px;border-bottom:1.5px solid var(--ink);padding-bottom:7px}
+.lab h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.005em}
+.lab span{font-size:13px;color:var(--sub);text-align:right}
+
+/* ranking */
+.tbl{background:var(--card);border-radius:8px;overflow:hidden}
+.find{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
 .find svg{width:18px;height:18px;flex:none;color:var(--sub)}
 .find input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 16px var(--sans);color:var(--ink)}
 html[lang="zh-HK"] .find input{font-family:var(--hk)}
 .find input::placeholder{color:var(--faint)}
-.me{margin-top:10px;background:var(--night);color:#fff;border-radius:8px;padding:12px 14px;display:flex;gap:14px;align-items:center}
+.me{margin:0;background:var(--night);color:#fff;padding:12px 14px;display:flex;gap:14px;align-items:center}
 .me b{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em;min-width:46px}
 .me div{font-size:13.5px;line-height:1.35}
 .me small{display:block;color:rgba(255,255,255,.65);font-size:12.5px;margin-top:2px}
-.tbl{background:var(--card);border-radius:8px;margin-top:12px;overflow:hidden}
 .th,.row{display:grid;grid-template-columns:30px 32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:0 14px}
-.th{height:36px;font-size:12px;font-weight:600;color:var(--sub);border-bottom:1px solid var(--line)}
+.th{height:34px;font-size:12px;font-weight:600;color:var(--sub);border-bottom:1px solid var(--line2);background:#fbfaf8}
 .th span:nth-child(4){text-align:right}
-.row{min-height:56px;border-bottom:1px solid #eeece6;transition:background .6s}
-.row:last-of-type{border-bottom:0}
+.row{min-height:56px;border-bottom:1px solid var(--line2);transition:background .6s}
 .row .r{font-size:16px;font-weight:700;display:flex;flex-direction:column;line-height:1.05}
 .row .r .mv{font-size:10px;margin-top:3px;font-family:var(--sans)}
 .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
@@ -129,13 +135,13 @@ html[lang="zh-HK"] .find input{font-family:var(--hk)}
 .row .tr{font-size:12px;color:var(--sub)}
 .row .sc{font-size:17px;font-weight:800;text-align:right;line-height:1.15}
 .row .sc small{display:block;font-size:12px;font-weight:500;color:var(--sub)}
-.mv{font-size:11px;font-weight:700;flex:none}
+.mv{font-weight:700;flex:none}
 .mv.up{color:var(--up)}.mv.dn{color:var(--faint)}.mv.nw{color:var(--ice-ink)}
 .row.you{background:var(--you)}
 .row.flash{background:#fff6d1}
 .gapline{height:10px;border-bottom:1px dashed var(--line);margin:0 14px}
-.more{display:block;width:100%;padding:13px;font-size:14px;font-weight:700;border-top:1px solid #eeece6;text-align:center}
-.none{padding:22px 16px;text-align:center;color:var(--sub);font-size:14px}
+.more{display:block;width:100%;padding:13px;font-size:14px;font-weight:700;text-align:center}
+.none{padding:24px 16px;text-align:center;color:var(--sub);font-size:14px}
 
 /* weekly beanie */
 .weeks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -150,25 +156,39 @@ html[lang="zh-HK"] .find input{font-family:var(--hk)}
 .wk ol{margin:4px 0 0;padding-left:16px;font-size:12px;font-weight:600;line-height:1.35}
 .wk ol li{overflow-wrap:anywhere}
 
-/* how to */
+/* how to join */
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.step img{width:100%;aspect-ratio:9/13;object-fit:cover;object-position:top;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
+.step img{width:100%;aspect-ratio:9/14;object-fit:cover;object-position:top;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
 .step p{margin:8px 2px 0;font-size:13px;font-weight:600;line-height:1.3;display:flex;gap:6px}
 .step p b{font-weight:800;color:var(--faint)}
 .cta{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;background:var(--ink);color:#fff;text-decoration:none;font-size:17px;font-weight:700;height:54px;border-radius:8px}
 .cta svg{width:18px;height:18px}
 .tags{margin:10px 4px 0;font-size:13px;color:var(--sub);text-align:center}
-.rules{margin:22px 4px 0;font-size:13px;color:var(--sub);line-height:1.55}
+
+/* rules */
+.rl{margin:0;background:var(--card);border-radius:8px;padding:2px 14px}
+.rl div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--line2)}
+.rl div:last-child{border-bottom:0}
+.rl dt{font-size:13.5px;font-weight:800}
+.rl dd{margin:0;font-size:13.5px;color:#3d4046;line-height:1.5}
+.fine{margin:10px 4px 0;font-size:13px;color:var(--sub)}
 footer{margin:22px 4px 0;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;color:var(--sub)}
 footer img{height:16px;width:auto;display:block;opacity:.85}
 footer .r{text-align:right}
-@media (max-width:360px){.lead .s{font-size:44px}.lead .rk{font-size:78px}.th,.row{grid-template-columns:26px 28px minmax(0,1fr) auto;gap:8px;padding:0 10px}}
-@media (prefers-reduced-motion:reduce){#snow{display:none}.dot{animation:none}}
+
+/* bottom start bar */
+.dock{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140%);width:min(528px,calc(100% - 32px));z-index:30;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:#fff;text-decoration:none;border-radius:10px;padding:0 18px;height:54px;box-shadow:0 10px 30px rgba(13,22,38,.28);transition:transform .3s ease}
+.dock.on{transform:translate(-50%,0)}
+.dock span{font-size:16px;font-weight:700}
+.dock small{font-size:12.5px;color:rgba(255,255,255,.65);font-weight:500;margin-left:8px}
+.dock svg{width:18px;height:18px;flex:none}
+@media (max-width:360px){.lead .s{font-size:44px}.lead .rk{font-size:78px}.th,.row{grid-template-columns:26px 28px minmax(0,1fr) auto;gap:8px;padding:0 10px}.rl div{grid-template-columns:92px minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){#snow{display:none}.dot{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <div class="page">
-  <header class="hero">
+  <header class="hero" id="hero">
     <img class="art" src="img/hero.webp" alt="">
     <canvas id="snow" aria-hidden="true"></canvas>
     <div class="htop"><img src="img/mlb_white.png" alt="MLB"><div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><span>/</span><button type="button" data-lang="zh">中文</button></div></div>
@@ -179,30 +199,39 @@ footer .r{text-align:right}
       <p class="cdl" id="cd"></p>
     </div>
   </header>
-  <div class="band" id="band"></div>
+  <section class="band" id="band"></section>
+  <section class="prize"><div class="t" data-t="prizeH"></div><div class="d" data-t="prizeS"></div>
+    <div class="it"><figure><img src="img/p_beanie.webp" alt="" loading="lazy"><figcaption data-t="pBeanie"></figcaption></figure><figure><img src="img/p_charm.webp" alt="" loading="lazy"><figcaption data-t="pCharm"></figcaption></figure><figure><img src="img/p_top.webp" alt="" loading="lazy"><figcaption data-t="pTop"></figcaption></figure><figure><img src="img/p_bottom.webp" alt="" loading="lazy"><figcaption data-t="pBottom"></figcaption></figure></div>
+  </section>
+  <nav class="snav" id="snav"><a href="#rank" data-t="navRank"></a><a href="#weekly" data-t="navWeek"></a><a href="#join" data-t="navJoin"></a></nav>
   <main>
     <div id="note"></div>
-    <div class="lab"><h2 data-t="raceH"></h2><span data-t="raceS"></span></div>
-    <div id="runs"></div>
-    <div class="prize"><div class="t" data-t="prizeH"></div><div class="d" data-t="prizeS"></div>
-      <div class="it"><figure><img src="img/p_beanie.webp" alt="" loading="lazy"><figcaption data-t="pBeanie"></figcaption></figure><figure><img src="img/p_charm.webp" alt="" loading="lazy"><figcaption data-t="pCharm"></figcaption></figure><figure><img src="img/p_top.webp" alt="" loading="lazy"><figcaption data-t="pTop"></figcaption></figure><figure><img src="img/p_bottom.webp" alt="" loading="lazy"><figcaption data-t="pBottom"></figcaption></figure></div>
-    </div>
-    <div id="board"></div>
-
-    <div class="lab"><h2 data-t="weekH"></h2><span data-t="weekS"></span></div>
-    <div class="weeks" id="weeks"></div>
-
-    <div class="lab"><h2 data-t="howH"></h2><span></span></div>
-    <div class="steps">
-      <div class="step"><img src="img/s_title.webp" alt="" loading="lazy"><p><b>1</b><span data-t="s1"></span></p></div>
-      <div class="step"><img src="img/s_play.webp" alt="" loading="lazy"><p><b>2</b><span data-t="s2"></span></p></div>
-      <div class="step"><img src="img/s_result.webp" alt="" loading="lazy"><p><b>3</b><span data-t="s3"></span></p></div>
-    </div>
-    <a class="cta" id="play" href="https://mlbwhitechristmas26.vercel.app/" target="_blank" rel="noopener"><span data-t="play"></span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h11M11 5l5 5-5 5"/></svg></a>
-    <p class="tags" data-t="tags"></p>
-    <p class="rules" data-t="rules"></p>
+    <section class="sec" id="rank">
+      <div class="lab"><h2 data-t="rankH"></h2><span id="rankMeta"></span></div>
+      <div id="board"></div>
+    </section>
+    <section class="sec" id="weekly">
+      <div class="lab"><h2 data-t="weekH"></h2><span data-t="weekS"></span></div>
+      <div class="weeks" id="weeks"></div>
+    </section>
+    <section class="sec" id="join">
+      <div class="lab"><h2 data-t="howH"></h2><span></span></div>
+      <div class="steps">
+        <div class="step"><img data-shot="s_title" alt="" loading="lazy"><p><b>1</b><span data-t="s1"></span></p></div>
+        <div class="step"><img data-shot="s_play" alt="" loading="lazy"><p><b>2</b><span data-t="s2"></span></p></div>
+        <div class="step"><img data-shot="s_result" alt="" loading="lazy"><p><b>3</b><span data-t="s3"></span></p></div>
+      </div>
+      <a class="cta play" href="#" target="_blank" rel="noopener"><span data-t="play"></span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h11M11 5l5 5-5 5"/></svg></a>
+      <p class="tags" data-t="tags"></p>
+    </section>
+    <section class="sec" id="rules">
+      <div class="lab"><h2 data-t="rulesH"></h2><span></span></div>
+      <dl class="rl"><div><dt data-t="r1t"></dt><dd data-t="r1"></dd></div><div><dt data-t="r2t"></dt><dd data-t="r2"></dd></div><div><dt data-t="r3t"></dt><dd data-t="r3"></dd></div></dl>
+      <p class="fine" data-t="fine"></p>
+    </section>
     <footer><img src="img/mlb_black.png" alt="MLB"><div class="r"><span id="upd"></span> <span id="tnc"></span></div></footer>
   </main>
+  <a class="dock play" id="dock" href="#" target="_blank" rel="noopener"><div><span data-t="play"></span><small data-t="dockS"></small></div><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h11M11 5l5 5-5 5"/></svg></a>
 </div>
 
 <script>
@@ -212,31 +241,42 @@ footer .r{text-align:right}
   var MODE = Q.has('demo') ? 'demo' : (Q.has('practice') ? 'practice' : 'live');
   var CFG = { start:'2026-11-30T00:00:00+08:00', end:'2026-12-20T23:59:59+08:00',
     weeks:[{w:'W1',from:'2026-11-30',to:'2026-12-06',draw:'2026-12-07'},{w:'W2',from:'2026-12-07',to:'2026-12-13',draw:'2026-12-14'},{w:'W3',from:'2026-12-14',to:'2026-12-20',draw:'2026-12-21'}],
-    game:'https://mlbwhitechristmas26.vercel.app/', tnc:'' };
+    game:'https://seanlaifnf.github.io/mlbkolresearch/wx-game/', tnc:'' };
   var BEANIE = { W1:'img/b_w1.webp', W2:'img/b_w2.webp', W3:'img/b_w3.webp' };
   var DEMO_NOW = { pre:'2026-11-28T12:00:00+08:00', live:'2026-12-08T20:14:00+08:00', final:'2026-12-21T12:00:00+08:00' };
 
+  // wording follows the HK edit of the game: written Chinese, plain English, the game's own button names
   var T = {
     en:{ title:'Live scoreboard', live:'Live', upd1:'updated {t}', opens:'Opens Monday 30 November', fin:'Final results', closed:'Race closed', recon:'Reconnecting…',
-      endsIn:'Race ends in <b>{d}d {h}h {m}m</b>', opensIn:'Race opens in <b>{d}d {h}h {m}m</b>', closedL:'The race has closed. Results are being checked.', finalL:'Winners will be contacted by DM.',
-      raceH:'Full-look race', raceS:'Top three at 10/10 win', leader:'Leader', winner:'Winner', second:'Second', third:'Third', behind:'{g} behind', t1:'1 try', tn:'{n} tries', cleared:'Cleared 10/10', checked:'Checked', waiting:'Waiting for the first 10/10 score', slot:'Open spot',
-      prizeH:'Top three win the 26FW full look', prizeS:'Meow beanie and Meow charm, plus a top and bottom from Set A or Set B.', pBeanie:'Beanie', pCharm:'Charm', pTop:'Top', pBottom:'Bottom',
-      find:'Find your account', meRank:'@{h}', meRankS:'{s} points · {tr}', meNot:'Not on the board yet', meNotS:'Clear all 10 stages and post your score card to your feed.',
-      hRank:'Rank', hPlayer:'Player', hScore:'Score', hGap:'Gap', all:'Show all {n} players', none:'No scores yet. Be the first on the board.', few:'{n} on the board so far.',
+      endsIn:'Race ends in <b>{d}d {h}h {m}m</b>', opensIn:'Race opens in <b>{d}d {h}h {m}m</b>', closedL:'The race has closed. Results are being checked.', finalL:"Winners and full terms are posted on MLB's official Instagram.",
+      leader:'Leader', winner:'Winner', second:'Second', third:'Third', behind:'{g} behind', t1:'1 try', tn:'{n} tries', cleared:'All 10 stages cleared', checked:'Checked', waiting:'Waiting for the first player to clear all 10 stages', slot:'Open spot',
+      prizeH:'What the top three win', prizeS:'An MLB 26FW full look: Meow beanie, Meow charm, and a top and bottom from Set A or Set B.', pBeanie:'Meow beanie', pCharm:'Meow charm', pTop:'Top', pBottom:'Bottom',
+      navRank:'Ranking', navWeek:'Weekly beanie', navJoin:'How to join',
+      rankH:'Ranking', rankMeta:'{n} players', rankMeta1:'1 player', preRank:'The ranking opens on Monday 30 November.',
+      find:'Find your Instagram username', meRankS:'{s} points · {tr}', meNot:'Not on the board yet', meNotS:'Clear all 10 stages, tap Share to Instagram and post your score card to your feed.',
+      hRank:'Rank', hPlayer:'Player', hScore:'Score', all:'Show all {n} players', none:'No scores yet. Be the first on the board.', few:'{n} on the board so far.',
       weekH:'Weekly Meow beanie', weekS:'Three winners every Monday', week:'Week {n}', now:'This week', entered:'{n} entered', out:'Winners out {d}', winners:'Winners', three:'Three winners',
-      howH:'How to get on the board', s1:'Play the game', s2:'Clear all 10 stages', s3:'Post your score card to your feed', play:'Play now',
-      tags:'Follow and tag @mlbkorea_hk_mc, and add #mlbwhitechristmas.', rules:'Each account counts once, with its best score; when an entry drops off, the next player moves up. The top ten are checked every Monday. Beanie winners are drawn each Monday from that week\'s Story and feed posts, at any stage.',
+      howH:'How to join', s1:'Tap Start', s2:'Clear all 10 stages', s3:'Tap Share to Instagram and post to your feed', play:'Start the game', dockS:'Save the White Christmas',
+      tags:"Then follow and tag MLB's official Instagram (@mlbkorea_hk_mc) and add #MLBWHITECHRISTMAS.",
+      rulesH:'Rules', r1t:'Full look', r1:'Top three scores with all 10 stages cleared and the score card posted to your feed. Each account counts once, with its best score.',
+      r2t:'Weekly Meow beanie', r2:"Three winners every Monday from that week's Story and feed posts, at any stage.", r3t:'Checks', r3:'The top ten are checked every Monday. If an entry is removed, the next player moves up.',
+      fine:"Winners and full terms are posted on MLB's official Instagram.",
       upd:'Updated {t} HKT. This page refreshes itself.', updNone:'This page refreshes itself.', tnc:'Terms & conditions', demo:'Demo data. These are not real players.', practice:'Practice board, only visible on this device.',
       opensBig:'The race opens', opensDate:'Monday 30 November', days:'days', hours:'hours', mins:'minutes', newM:'New' },
     zh:{ title:'即時排行榜', live:'即時', upd1:'{t} 更新', opens:'11 月 30 日（星期一）開始', fin:'最終結果', closed:'挑戰已截止', recon:'重新連線中…',
-      endsIn:'距離截止 <b>{d} 日 {h} 時 {m} 分</b>', opensIn:'距離開始 <b>{d} 日 {h} 時 {m} 分</b>', closedL:'挑戰已截止，正在核實結果。', finalL:'得獎者將收到 DM 通知。',
-      raceH:'成套造型挑戰', raceS:'10 關全破，最高分 3 位得獎', leader:'領先', winner:'得獎者', second:'第二名', third:'第三名', behind:'落後 {g} 分', t1:'挑戰 1 次', tn:'挑戰 {n} 次', cleared:'10 關全破', checked:'已核實', waiting:'等待第一個 10 關全破的分數', slot:'虛位以待',
-      prizeH:'最高分 3 位贏取 26FW 成套造型', prizeS:'Meow 帽及 Meow 吊飾，另加 Set A 或 Set B 的上衣及褲。', pBeanie:'Meow 帽', pCharm:'吊飾', pTop:'上衣', pBottom:'褲',
-      find:'搜尋你的帳戶', meRank:'@{h}', meRankS:'{s} 分 · {tr}', meNot:'尚未上榜', meNotS:'完成全部 10 關，並將分數卡發佈至 Feed。',
-      hRank:'名次', hPlayer:'玩家', hScore:'分數', hGap:'差距', all:'顯示全部 {n} 位玩家', none:'尚未有分數，成為第一位上榜的玩家。', few:'目前共 {n} 位上榜。',
+      endsIn:'距離截止 <b>{d} 日 {h} 時 {m} 分</b>', opensIn:'距離開始 <b>{d} 日 {h} 時 {m} 分</b>', closedL:'挑戰已截止，正在核實結果。', finalL:'得獎名單及細則以 MLB 官方 IG 公布為準。',
+      leader:'領先', winner:'得獎者', second:'第二名', third:'第三名', behind:'落後 {g} 分', t1:'挑戰 1 次', tn:'挑戰 {n} 次', cleared:'10 關全部完成', checked:'已核實', waiting:'等待第一位完成全部 10 關的玩家', slot:'虛位以待',
+      prizeH:'最高分 3 位贏取', prizeS:'MLB 26FW 成套造型：Meow 帽、Meow 吊飾，另加 Set A 或 Set B 的上衣及褲。', pBeanie:'Meow 帽', pCharm:'Meow 吊飾', pTop:'上衣', pBottom:'褲',
+      navRank:'排行榜', navWeek:'每週 Meow 帽', navJoin:'參加方法',
+      rankH:'排行榜', rankMeta:'共 {n} 位玩家', rankMeta1:'共 1 位玩家', preRank:'排行榜將於 11 月 30 日（星期一）開放。',
+      find:'搜尋你的 IG 帳戶名稱', meRankS:'{s} 分 · {tr}', meNot:'尚未上榜', meNotS:'完成全部 10 關，按「分享至 IG」並將分數卡發佈至 Feed。',
+      hRank:'名次', hPlayer:'玩家', hScore:'分數', all:'顯示全部 {n} 位玩家', none:'暫未有分數，成為第一位上榜的玩家。', few:'目前共 {n} 位上榜。',
       weekH:'每週 Meow 帽', weekS:'每週一公布 3 位得獎者', week:'第 {n} 週', now:'本週', entered:'{n} 人參加', out:'{d} 公布', winners:'得獎者', three:'3 位得獎者',
-      howH:'如何上榜', s1:'開始遊戲', s2:'完成全部 10 關', s3:'將分數卡發佈至 Feed', play:'立即遊玩',
-      tags:'追蹤及標註 @mlbkorea_hk_mc，並加上 #mlbwhitechristmas。', rules:'每個帳戶只計最高分，其餘名次順延。每週一核實前 10 名。Meow 帽得獎者於每週一從該週的 Story 及 Feed 帖子中選出，不限關數。',
+      howH:'參加方法', s1:'按「開始遊戲」', s2:'完成全部 10 關', s3:'按「分享至 IG」，發佈至 Feed', play:'開始遊戲', dockS:'Save the White Christmas',
+      tags:'再追蹤並標註 MLB 官方 IG（@mlbkorea_hk_mc），並加上 #MLBWHITECHRISTMAS。',
+      rulesH:'規則', r1t:'成套造型', r1:'完成全部 10 關並將分數卡發佈至 Feed，最高分 3 位得獎。每個帳戶只計最高分。',
+      r2t:'每週 Meow 帽', r2:'每週一從該週的 Story 及 Feed 帖子中選出 3 位得獎者，不限關數。', r3t:'核實', r3:'每週一核實前 10 名；如有參加資格被取消，其後名次順延。',
+      fine:'得獎名單及細則以 MLB 官方 IG 公布為準。',
       upd:'更新於 {t}，頁面會自動更新。', updNone:'頁面會自動更新。', tnc:'條款及細則', demo:'示範資料，並非真實玩家。', practice:'練習版，只在此裝置顯示。',
       opensBig:'挑戰開始', opensDate:'11 月 30 日（星期一）', days:'日', hours:'時', mins:'分', newM:'新' }
   };
@@ -252,18 +292,18 @@ footer .r{text-align:right}
   function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
   function fmt(n){ return Number(n).toLocaleString('en-US'); }
   function nowMs(){ if (MODE === 'demo') return Date.parse(DEMO_NOW[Q.get('demo')] || DEMO_NOW.live); return MODE === 'practice' && board && board._now ? board._now : Date.now(); }
-  function hkParts(ms){ var d = new Date(ms + 8 * 36e5); return { y:d.getUTCFullYear(), mo:d.getUTCMonth() + 1, d:d.getUTCDate(), wd:d.getUTCDay(), h:('0' + d.getUTCHours()).slice(-2), mi:('0' + d.getUTCMinutes()).slice(-2) }; }
-  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], WDZ = ['日','一','二','三','四','五','六'];
+  function hkParts(ms){ var d = new Date(ms + 8 * 36e5); return { mo:d.getUTCMonth() + 1, d:d.getUTCDate(), wd:d.getUTCDay(), h:('0' + d.getUTCHours()).slice(-2), mi:('0' + d.getUTCMinutes()).slice(-2) }; }
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   function dDate(ms){ var p = hkParts(ms); return LANG === 'zh' ? p.mo + ' 月 ' + p.d + ' 日' : p.d + ' ' + MON[p.mo - 1]; }
-  function dDay(ms){ var p = hkParts(ms); return LANG === 'zh' ? p.mo + ' 月 ' + p.d + ' 日（' + WDZ[p.wd] + '）' : WD[p.wd] + ' ' + p.d + ' ' + MON[p.mo - 1]; }
-  function dTime(ms){ var p = hkParts(ms); return p.h + ':' + p.mi; }
   function dShort(ms){ var p = hkParts(ms); return LANG === 'zh' ? p.mo + '/' + p.d : p.d + ' ' + MON[p.mo - 1]; }
   function dShortDay(ms){ var p = hkParts(ms); return LANG === 'zh' ? p.mo + '/' + p.d : WD[p.wd] + ' ' + p.d + ' ' + MON[p.mo - 1]; }
+  function dTime(ms){ var p = hkParts(ms); return p.h + ':' + p.mi; }
   function iso(dstr){ return Date.parse(dstr + 'T12:00:00+08:00'); }
   var CHECK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>';
   var TINTS = [['#dcebf7','#1d5e8f'],['#f6e1e7','#9b2c4e'],['#ece5d8','#6b5534'],['#dff0e6','#22663d'],['#e7e3f3','#4b3d8f'],['#e8e8e4','#45474d']];
   function avatar(h){ var n = 0; for (var i = 0; i < h.length; i++) n = (n * 31 + h.charCodeAt(i)) >>> 0; var c = TINTS[n % TINTS.length]; var a = el('div', 'av', (h.replace(/[^a-z0-9]/gi, '')[0] || '?').toUpperCase()); a.style.background = c[0]; a.style.color = c[1]; return a; }
   function checked(){ var s = el('span', 'ck'); s.innerHTML = CHECK; s.appendChild(document.createTextNode(t('checked'))); return s; }
+  function tries(n){ return n === 1 ? t('t1') : t('tn', { n:n }); }
 
   try { prevRanks = JSON.parse(localStorage.getItem('wx_seen_ranks') || 'null'); } catch (e) { prevRanks = null; }
 
@@ -274,7 +314,6 @@ footer .r{text-align:right}
     if (now > Date.parse(CFG.end)) return 'closed';
     return 'live';
   }
-
   function demoBoard(){
     var kind = Q.get('demo') || 'live', race = [], s = 18420, seed = 7;
     function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
@@ -311,35 +350,28 @@ footer .r{text-align:right}
   function bandView(race, ph){
     var band = $('band'); band.textContent = '';
     if (ph === 'pre' && !race.length) {
-      var p = el('div', 'lead pre'); var w = el('div', 'who'); w.style.gridColumn = '1/-1';
+      var p = el('div', 'lead pre'), w = el('div', 'who'); w.style.gridColumn = '1/-1';
       w.appendChild(el('div', 'tag', t('opensBig'))); w.appendChild(el('div', 'big', t('opensDate')));
       var dg = el('div', 'digits'); [t('days'), t('hours'), t('mins')].forEach(function(u){ var x = el('div'); x.appendChild(el('b', 'num', '–')); x.appendChild(el('span', null, u)); dg.appendChild(x); });
       w.appendChild(dg); p.appendChild(w); band.appendChild(p); return;
     }
     var x = race[0], L = el('div', 'lead'); L.setAttribute('data-rank', '1');
-    var tag = el('div', 'tag', ph === 'final' ? t('winner') : t('leader')); L.appendChild(tag);
+    L.appendChild(el('div', 'tag', ph === 'final' ? t('winner') : t('leader')));
     L.appendChild(el('div', 'rk num', '1'));
-    var who = el('div', 'who');
-    var h = el('div', 'h'); h.appendChild(el('span', 'hn', x ? '@' + x.h : t('waiting'))); if (x && x.v) h.appendChild(checked()); who.appendChild(h);
-    who.appendChild(el('div', 's num', x ? fmt(x.s) : '—'));
-    L.appendChild(who);
-    if (x) { var m = el('div', 'm'); m.appendChild(el('span', null, t('cleared'))); m.appendChild(el('span', null, x.n === 1 ? t('t1') : t('tn', { n:x.n }))); L.appendChild(m); }
+    var who = el('div', 'who'), h = el('div', 'h'); h.appendChild(el('span', 'hn', x ? '@' + x.h : t('waiting'))); if (x && x.v) h.appendChild(checked()); who.appendChild(h);
+    who.appendChild(el('div', 's num', x ? fmt(x.s) : '—')); L.appendChild(who);
+    if (x) { var m = el('div', 'm'); m.appendChild(el('span', null, t('cleared'))); m.appendChild(el('span', null, tries(x.n))); L.appendChild(m); }
     band.appendChild(L);
-  }
-  function runsView(race, ph){
-    var box = $('runs'); box.textContent = '';
-    if (ph === 'pre' && !race.length) return;
     var g = el('div', 'runs');
-    [race[1], race[2]].forEach(function(x, i){
-      var c = el('div', 'run' + (x ? '' : ' empty')); c.setAttribute('data-rank', String(i + 2));
-      var top = el('div'); top.style.display = 'flex'; top.style.justifyContent = 'space-between';
-      top.appendChild(el('span', 'rk num', String(i + 2))); top.appendChild(el('span', 'tag', ph === 'final' && x ? t('winner') : (i ? t('third') : t('second')))); c.appendChild(top);
-      var h = el('div', 'h'); h.appendChild(el('span', 'hn', x ? '@' + x.h : t('slot'))); if (x && x.v) h.appendChild(checked()); c.appendChild(h);
-      c.appendChild(el('div', 's num', x ? fmt(x.s) : '—'));
-      c.appendChild(el('div', 'g', x ? t('behind', { g:fmt(race[0].s - x.s) }) + ' · ' + (x.n === 1 ? t('t1') : t('tn', { n:x.n })) : ''));
+    [race[1], race[2]].forEach(function(r, i){
+      var c = el('div', 'run' + (r ? '' : ' empty')); c.setAttribute('data-rank', String(i + 2));
+      var top = el('div', 'top'); top.appendChild(el('span', 'rk num', String(i + 2))); top.appendChild(el('span', 'tag', ph === 'final' && r ? t('winner') : (i ? t('third') : t('second')))); c.appendChild(top);
+      var hh = el('div', 'h'); hh.appendChild(el('span', 'hn', r ? '@' + r.h : t('slot'))); if (r && r.v) { var ic = el('span', 'ck'); ic.innerHTML = CHECK; ic.title = t('checked'); hh.appendChild(ic); } c.appendChild(hh);
+      c.appendChild(el('div', 's num', r ? fmt(r.s) : '—'));
+      c.appendChild(el('div', 'g', r ? t('behind', { g:fmt(race[0].s - r.s) }) + ' · ' + tries(r.n) : ''));
       g.appendChild(c);
     });
-    box.appendChild(g);
+    band.appendChild(g);
   }
 
   function move(h, r){
@@ -351,25 +383,26 @@ footer .r{text-align:right}
   }
   function row(x, top, you){
     var r = el('div', 'row' + (you ? ' you' : '')); r.setAttribute('data-h', x.h);
-    var rc = el('div', 'r num', String(x.r)), mv = move(x.h, x.r); if (mv) rc.appendChild(mv);
-    r.appendChild(rc);
+    var rc = el('div', 'r num', String(x.r)), mv = move(x.h, x.r); if (mv) rc.appendChild(mv); r.appendChild(rc);
     r.appendChild(avatar(x.h));
     var p = el('div', 'p'), hn = el('div', 'hn'); hn.appendChild(el('em', null, '@' + x.h));
     if (x.v) { var s = el('span'); s.innerHTML = CHECK; hn.appendChild(s.firstChild); }
-    p.appendChild(hn); p.appendChild(el('div', 'tr', x.n === 1 ? t('t1') : t('tn', { n:x.n }))); r.appendChild(p);
+    p.appendChild(hn); p.appendChild(el('div', 'tr', tries(x.n))); r.appendChild(p);
     var sc = el('div', 'sc num', fmt(x.s)); if (x.r > 1) sc.appendChild(el('small', null, '−' + fmt(top - x.s))); r.appendChild(sc);
     return r;
   }
   function norm(s){ return String(s || '').toLowerCase().replace(/^@+/, '').replace(/\s+/g, ''); }
   function boardView(race, ph){
     var box = $('board'); box.textContent = '';
-    if (ph === 'pre' && !race.length) return;
+    $('rankMeta').textContent = race.length ? (race.length === 1 ? t('rankMeta1') : t('rankMeta', { n:fmt(race.length) })) : '';
+    var tb = el('div', 'tbl'); box.appendChild(tb);
+    if (ph === 'pre' && !race.length) { tb.appendChild(el('div', 'none', t('preRank'))); return; }
     var f = el('div', 'find'); f.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5" stroke-linecap="round"/></svg>';
     var inp = el('input'); inp.type = 'search'; inp.id = 'q'; inp.placeholder = t('find'); inp.autocomplete = 'off'; inp.autocapitalize = 'off'; inp.spellcheck = false;
     try { inp.value = sessionStorage.getItem('wx_q') || ''; } catch (e) {}
-    f.appendChild(inp); box.appendChild(f);
-    var me = el('div', 'me'); me.id = 'me'; me.hidden = true; box.appendChild(me);
-    var tb = el('div', 'tbl'); tb.id = 'list'; box.appendChild(tb);
+    f.appendChild(inp); tb.appendChild(f);
+    var me = el('div', 'me'); me.id = 'me'; me.hidden = true; tb.appendChild(me);
+    var list = el('div'); list.id = 'list'; tb.appendChild(list);
     inp.addEventListener('input', function(){ try { sessionStorage.setItem('wx_q', inp.value); } catch (e) {} listView(); });
     listView();
   }
@@ -377,9 +410,9 @@ footer .r{text-align:right}
     var tb = $('list'); if (!tb) return;
     var race = (board && board.race) || [], q = norm(($('q') || {}).value), me = $('me'), top = race.length ? race[0].s : 0;
     tb.textContent = '';
-    var th = el('div', 'th'); ['hRank', '', 'hPlayer', 'hScore'].forEach(function(k){ th.appendChild(el('span', null, k ? t(k) : '')); }); tb.appendChild(th);
     var hit = q ? race.filter(function(x){ return x.h === q; })[0] || race.filter(function(x){ return x.h.indexOf(q) >= 0; })[0] : null;
     var rest = race.slice(3), n = showAll ? rest.length : Math.min(rest.length, SHOW - 3);
+    if (rest.length) { var th = el('div', 'th'); ['hRank', '', 'hPlayer', 'hScore'].forEach(function(k){ th.appendChild(el('span', null, k ? t(k) : '')); }); tb.appendChild(th); }
     if (!race.length) tb.appendChild(el('div', 'none', t('none')));
     else if (!rest.length) tb.appendChild(el('div', 'none', t('few', { n:race.length })));
     rest.slice(0, n).forEach(function(x){ tb.appendChild(row(x, top, hit && hit.h === x.h)); });
@@ -387,7 +420,7 @@ footer .r{text-align:right}
     if (!showAll && rest.length > n) { var mb = el('button', 'more', t('all', { n:race.length })); mb.type = 'button'; mb.addEventListener('click', function(){ showAll = true; listView(); }); tb.appendChild(mb); }
     me.hidden = !q; me.textContent = '';
     if (q) {
-      if (hit) { me.appendChild(el('b', 'num', '#' + hit.r)); var d = el('div'); d.appendChild(document.createTextNode(t('meRank', { h:hit.h }))); d.appendChild(el('small', null, t('meRankS', { s:fmt(hit.s), tr:hit.n === 1 ? t('t1') : t('tn', { n:hit.n }) }) + (hit.v ? ' · ' + t('checked') : ''))); me.appendChild(d); }
+      if (hit) { me.appendChild(el('b', 'num', '#' + hit.r)); var d = el('div'); d.appendChild(document.createTextNode('@' + hit.h)); d.appendChild(el('small', null, t('meRankS', { s:fmt(hit.s), tr:tries(hit.n) }) + (hit.v ? ' · ' + t('checked') : ''))); me.appendChild(d); }
       else { me.appendChild(el('b', null, '—')); var d2 = el('div'); d2.appendChild(document.createTextNode(t('meNot'))); d2.appendChild(el('small', null, t('meNotS'))); me.appendChild(d2); }
     }
   }
@@ -412,18 +445,21 @@ footer .r{text-align:right}
 
   function render(){
     var b = board || { race:[], weeks:[] };
-    if (b.cfg) { ['start','end','game','tnc'].forEach(function(k){ if (b.cfg[k] != null) CFG[k] = b.cfg[k]; }); if (b.cfg.weeks) CFG.weeks = b.cfg.weeks; }
+    if (b.cfg) { ['start','end','tnc'].forEach(function(k){ if (b.cfg[k] != null) CFG[k] = b.cfg[k]; }); if (b.cfg.game) CFG.game = b.cfg.game; if (b.cfg.weeks) CFG.weeks = b.cfg.weeks; }
     var ph = phaseOf(b), race = b.race || [];
     document.documentElement.lang = LANG === 'zh' ? 'zh-HK' : 'en';
     Array.prototype.forEach.call(document.querySelectorAll('.lang button'), function(x){ x.className = x.getAttribute('data-lang') === LANG ? 'on' : ''; });
     Array.prototype.forEach.call(document.querySelectorAll('[data-t]'), function(x){ x.textContent = t(x.getAttribute('data-t')); });
+    Array.prototype.forEach.call(document.querySelectorAll('img[data-shot]'), function(x){ x.src = 'img/' + x.getAttribute('data-shot') + '_' + (LANG === 'zh' ? 'zh' : 'en') + '.webp'; });
     $('title').textContent = t('title');
     $('note').textContent = ''; if (MODE !== 'live') $('note').appendChild(el('div', 'note', MODE === 'demo' ? t('demo') : t('practice')));
-    statusLine(ph); bandView(race, ph); runsView(race, ph); boardView(race, ph); weeksView(b); countdown();
+    statusLine(ph); bandView(race, ph); boardView(race, ph); weeksView(b); countdown();
     var u = b.updated ? Date.parse(b.updated) : null;
     $('upd').textContent = u ? t('upd', { t:dDate(u) + ', ' + dTime(u) }) : t('updNone');
     var tn = $('tnc'); tn.textContent = ''; if (CFG.tnc) { var a = el('a', null, t('tnc')); a.href = CFG.tnc; a.target = '_blank'; a.rel = 'noopener'; tn.appendChild(a); }
-    $('play').href = CFG.game + (CFG.game.indexOf('?') < 0 ? '?' : '&') + 'utm_source=scoreboard&utm_medium=web&utm_campaign=whitechristmas';
+    // Start opens the game in the same language as this page
+    var href = CFG.game + (CFG.game.indexOf('?') < 0 ? '?' : '&') + 'lang=' + (LANG === 'zh' ? 'hk' : 'en') + '&utm_source=scoreboard&utm_medium=web&utm_campaign=whitechristmas';
+    Array.prototype.forEach.call(document.querySelectorAll('a.play'), function(a){ a.href = href; });
   }
   function flashChanged(oldB){
     if (!oldB || !board) return;
@@ -446,6 +482,21 @@ footer .r{text-align:right}
     LANG = b.getAttribute('data-lang'); try { localStorage.setItem('wx_lang', LANG); } catch (e) {}
     render();
   });
+
+  // section bar: highlight the section in view; bottom Start bar shows once the hero is gone and the join section isn't on screen
+  if ('IntersectionObserver' in window) {
+    var links = document.querySelectorAll('.snav a'), vis = {};
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ vis[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0; });
+      var best = null, br = 0; ['rank', 'weekly', 'join'].forEach(function(id){ if ((vis[id] || 0) > br) { br = vis[id]; best = id; } });
+      Array.prototype.forEach.call(links, function(a){ a.classList.toggle('on', !!best && a.getAttribute('href') === '#' + best); });
+    }, { rootMargin:'-52px 0px -40% 0px', threshold:[0, .1, .25, .5, .75, 1] });
+    ['rank', 'weekly', 'join'].forEach(function(id){ io.observe($(id)); });
+    var heroOut = false, joinIn = false, dock = $('dock');
+    var paint = function(){ dock.classList.toggle('on', heroOut && !joinIn); };
+    new IntersectionObserver(function(es){ heroOut = !es[0].isIntersecting; paint(); }).observe($('hero'));
+    new IntersectionObserver(function(es){ joinIn = es[0].isIntersecting; paint(); }).observe($('join'));
+  }
 
   // snow over the hero (paused when the tab is hidden; off for reduced motion)
   (function(){
