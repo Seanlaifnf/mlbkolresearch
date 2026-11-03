@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light only">
+<title>WX Scoreboard · Team console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+HK:wght@500;700&display=swap">
+<style>
+/* Team console for the White Christmas live scoreboard. Entry log = a secret GitHub gist (team-only), public board = wx-scoreboard/board.json
+   in the Pages repo. Token is pasted once per device and kept in this browser only. No third-party scripts on this page (token safety). */
+:root{
+  color-scheme:light only;
+  --ink:#0a0a0a; --muted:#5b616b; --line:#e3e6eb; --bg:#f4f6f8; --card:#fff;
+  --pink:#d63b74; --pink-soft:#fdeef4; --green:#15803d; --green-bg:#e8f6ee; --amber:#92400e; --amber-bg:#fef3c7; --ice:#e9f0f6; --ice-ink:#2c4a63;
+  --font:"Inter","Noto Sans HK",-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif; --disp:"Anton","Arial Narrow",sans-serif; --mono:"DM Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:12px}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.btn{border:0;background:var(--ink);color:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:13px;white-space:nowrap}
+.btn.l{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.s{padding:5px 10px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* top bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--ink);color:#fff;border-radius:14px;padding:12px 16px}
+.ttl{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ttl b{font-family:var(--disp);font-weight:400;font-size:24px;letter-spacing:.02em}
+.ttl span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#bbb}
+.mode{border-radius:999px;padding:2px 8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em}
+.mode.live{background:#16a34a;color:#fff}.mode.practice{background:#f59e0b;color:#111}
+.pills{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:600;background:#1f1f22;border-radius:999px;padding:6px 11px;white-space:nowrap}
+.pill i{font-style:normal;margin-right:5px}
+.pill.ok i{color:#4ade80}.pill.busy i{color:#fbbf24}.pill.err{background:#7f1d1d}
+.bar .btn{background:#fff;color:var(--ink)}
+.bar a{color:#fff;font-size:12.5px;font-weight:700}
+.menu{position:relative}
+.menu .dd{position:absolute;right:0;top:110%;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.15);padding:6px;min-width:230px;z-index:20;display:none}
+.menu.on .dd{display:block}
+.dd button,.dd label{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:600}
+.dd button:hover{background:var(--bg)}
+.dd select{width:100%;margin-top:4px;padding:6px;border:1px solid var(--line);border-radius:8px}
+
+/* add form */
+.add{display:grid;grid-template-columns:1.4fr .9fr .6fr auto 1.2fr 1.5fr auto;gap:10px;align-items:end}
+.add label{display:flex;flex-direction:column;gap:4px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);min-width:0}
+.add input,.add select{border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:15px;font-weight:600;font-family:var(--font);letter-spacing:0;text-transform:none;color:var(--ink);background:#fff;min-width:0;width:100%}
+.add input:focus,.add select:focus{outline:2px solid var(--ink);outline-offset:-1px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;height:41px}
+.seg label{flex-direction:row;align-items:center;justify-content:center;padding:0 12px;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ink)}
+.seg input{display:none}
+.seg label:has(input:checked){background:var(--ink);color:#fff}
+.add .go{height:41px;border-radius:10px;padding:0 18px;font-size:14px}
+.hint{font-size:13px;font-weight:600;color:var(--muted);min-height:18px;margin-top:8px}
+.hint b{color:var(--ink)}.hint .w{color:var(--amber)}
+
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:0;background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:13px;box-shadow:inset 0 0 0 1px var(--line)}
+.tab.on{background:var(--ink);color:#fff;box-shadow:none}
+.tab small{font-family:var(--mono);font-size:10.5px;margin-left:6px;opacity:.7}
+
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border-radius:12px;padding:10px 12px}
+.kpi .v{font-family:var(--disp);font-size:30px;line-height:1.05}
+.kpi .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kpi.hot{background:var(--pink-soft)}.kpi.hot .v{color:var(--pink)}
+
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:0 8px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--disp);font-size:20px;width:44px}
+td.sc{font-family:var(--disp);font-size:20px;text-align:right;white-space:nowrap}
+th.r{text-align:right}
+.h{font-weight:800;color:var(--ink);text-decoration:none}
+.h:hover{text-decoration:underline}
+.chip{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 8px;white-space:nowrap}
+.chip.ok{background:var(--green-bg);color:var(--green)}.chip.pend{background:var(--bg);color:var(--muted)}.chip.need{background:var(--pink-soft);color:var(--pink)}.chip.out{background:#f3f4f6;color:#9ca3af;text-decoration:line-through}.chip.oow{background:var(--amber-bg);color:var(--amber)}
+.acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
+.acts a{font-size:12px;font-weight:700;color:var(--muted)}
+.top3 td{background:#fffdf5}
+.flt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.flt input,.flt select{border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:#fff}
+.flt input{min-width:180px}
+.empty{padding:26px;text-align:center;color:var(--muted);font-weight:600}
+.sel{border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:#fff;font-size:12px}
+.x{border:0;background:none;color:#9ca3af;font-size:16px;padding:2px 6px;border-radius:6px}
+.x:hover{background:var(--pink-soft);color:var(--pink)}
+
+/* draws */
+.dg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dw{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.dw.now{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.dw .hd{display:flex;justify-content:space-between;align-items:baseline}
+.dw .hd b{font-family:var(--disp);font-weight:400;font-size:28px;line-height:1}
+.dw .big{font-family:var(--disp);font-size:38px;line-height:1}
+.dw ol{margin:0;padding-left:18px;font-weight:700}
+.dw ol li{margin:4px 0;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.dw ol li s{color:#9ca3af;font-weight:500}
+.audit{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);line-height:1.5}
+.note{background:var(--ice);color:var(--ice-ink);border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:600;margin-top:12px}
+.final{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--pink-soft);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-weight:700}
+
+/* gate */
+.gate{max-width:640px;margin:40px auto;display:flex;flex-direction:column;gap:12px}
+.gate h1{font-family:var(--disp);font-weight:400;font-size:40px;margin:0;line-height:1}
+.gate ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:13.5px}
+.gate code{font-family:var(--mono);font-size:12px;background:var(--bg);border-radius:6px;padding:1px 6px}
+.gate input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px}
+.gate .row{display:grid;grid-template-columns:1fr 140px;gap:10px}
+.err{color:#b91c1c;font-weight:700;font-size:13px;min-height:18px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:999px;padding:10px 16px;font-weight:700;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;max-width:92vw}
+.toast.on{opacity:1}
+@media (max-width:1000px){.add{grid-template-columns:1fr 1fr 1fr}.add .grow{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dg{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.add{grid-template-columns:1fr 1fr}.gate .row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="gate" class="wrap" hidden></div>
+<div id="app" class="wrap" hidden>
+  <div class="bar">
+    <div class="ttl"><b>WX SCOREBOARD</b><span>Team console</span><span class="mode" id="mode"></span></div>
+    <div class="pills">
+      <span class="pill" id="sync"><i>●</i>Starting…</span>
+      <span class="pill" id="pubst"><i>◎</i>Public board —</span>
+      <button class="btn s" type="button" data-act="publish">Publish now</button>
+      <a id="openPub" href="../" target="_blank" rel="noopener">Public board ↗</a>
+      <div class="menu" id="menu"><button class="btn s l" type="button" data-act="menu">⋯</button>
+        <div class="dd">
+          <button type="button" data-act="csv">Export entries (CSV)</button>
+          <label id="simBox">Simulated date (practice)<select id="sim"></select></label>
+          <button type="button" data-act="switch" id="swBtn">Switch mode</button>
+          <button type="button" data-act="forget" id="fgBtn">Forget token on this device</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form class="card add" id="add" autocomplete="off">
+    <label>Player<input id="fH" list="handles" placeholder="@handle" required></label>
+    <label>Score<input id="fS" inputmode="numeric" placeholder="18420" required></label>
+    <label>Stage<select id="fSt"></select></label>
+    <div class="seg"><label><input type="radio" name="fT" value="feed" checked>Feed</label><label><input type="radio" name="fT" value="story">Story</label></div>
+    <label>Posted (HKT)<input id="fAt" type="datetime-local"></label>
+    <label class="grow">Post link (optional)<input id="fU" placeholder="instagram.com/p/…"></label>
+    <button class="btn go" type="submit">Add entry</button>
+  </form>
+  <datalist id="handles"></datalist>
+  <div class="hint" id="hint">Log every score card: feed or Story, any stage. Only 10/10 feed posts enter the full-look race; every entry counts for that week's beanie.</div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="card" id="view"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var CFG = {
+    owner:'seanlaifnf', repo:'mlbkolresearch', branch:'main', path:'wx-scoreboard/board.json',
+    gistDesc:'MLB HK White Christmas scoreboard · entry log (team only)', gistFile:'wx_entries.json',
+    start:'2026-11-30T00:00:00+08:00', end:'2026-12-20T23:59:59+08:00',
+    weeks:[{w:'W1',from:'2026-11-30',to:'2026-12-06',draw:'2026-12-07'},{w:'W2',from:'2026-12-07',to:'2026-12-13',draw:'2026-12-14'},{w:'W3',from:'2026-12-14',to:'2026-12-20',draw:'2026-12-21'}],
+    game:'https://mlbwhitechristmas26.vercel.app/', tnc:'', autoMin:10, minGapMin:2, pollSec:15, drawN:3, boardMax:300
+  };
+  var LS = { token:'wx_gh_token', mode:'wx_mode', who:'wx_who', plog:'wx_practice_log', pboard:'wx_practice_board', sim:'wx_sim', tab:'wx_tab' };
+  var SIMS = [['', 'Real clock'], ['2026-11-28T12:00', 'Sat 28 Nov · before launch'], ['2026-12-02T20:00', 'Wed 2 Dec · W1 live'], ['2026-12-07T10:00', 'Mon 7 Dec · W1 closed'], ['2026-12-16T20:00', 'Wed 16 Dec · W3 live'], ['2026-12-21T10:00', 'Mon 21 Dec · race closed']];
+  var S = { mode:null, store:null, log:null, who:'', tab:'race', saving:false, dirty:false, fails:0, lastSync:0, err:'', ef:{q:'',w:'',t:'',st:''} };
+
+  // ---------- helpers
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function fmt(n){ return Number(n).toLocaleString('en-US'); }
+  function ls(k, v){ try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function NOW(){ var s = S.mode === 'practice' && ls(LS.sim); return s ? Date.parse(s + ':00+08:00') : Date.now(); }
+  function hk(ms, o){ return new Date(ms).toLocaleString('en-GB', Object.assign({ timeZone:'Asia/Hong_Kong' }, o || { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:false })); }
+  function hkInput(ms){ var d = new Date(ms + 8 * 36e5); return d.toISOString().slice(0, 16); }
+  function wStart(w){ return Date.parse(w.from + 'T00:00:00+08:00'); }
+  function wEnd(w){ return Date.parse(w.to + 'T23:59:59+08:00'); }
+  function weekOf(at){ for (var i = 0; i < CFG.weeks.length; i++) if (at >= wStart(CFG.weeks[i]) && at <= wEnd(CFG.weeks[i])) return CFG.weeks[i].w; return ''; }
+  function norm(h){ return String(h || '').trim().toLowerCase().replace(/^@+/, '').replace(/\s+/g, ''); }
+  function validH(h){ return /^[a-z0-9._]{1,30}$/.test(h); }
+  function toast(t){ var e = $('toast'); e.textContent = t; e.className = 'toast on'; clearTimeout(toast.t); toast.t = setTimeout(function(){ e.className = 'toast'; }, 2600); }
+  function emptyLog(){ return { v:1, entries:[], draws:[], looks:null, pub:null }; }
+  function randInt(n){ var a = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n; do { crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % n; }
+
+  // ---------- merge (entries / draws by id, newest edit wins; deletions are tombstones)
+  function pick(x, y){ if (!x) return y || null; if (!y) return x; return (y.u || 0) > (x.u || 0) ? y : x; }
+  function byId(a, b){ var m = {}; (a || []).concat(b || []).forEach(function(x){ var o = m[x.id]; if (!o || (x.u || 0) > (o.u || 0)) m[x.id] = x; }); return Object.keys(m).map(function(k){ return m[k]; }); }
+  function merge(a, b){ a = a || emptyLog(); b = b || emptyLog(); return { v:1, entries:byId(a.entries, b.entries), draws:byId(a.draws, b.draws), looks:pick(a.looks, b.looks), pub:pick(a.pub, b.pub) }; }
+
+  // ---------- stores
+  function PracticeStore(){
+    return {
+      label:'This browser only',
+      init:function(){ return Promise.resolve(); },
+      load:function(){ var x = null; try { x = JSON.parse(ls(LS.plog) || 'null'); } catch (e) {} return Promise.resolve(x || emptyLog()); },
+      save:function(log){ ls(LS.plog, JSON.stringify(log)); return Promise.resolve(); },
+      publish:function(board){ ls(LS.pboard, JSON.stringify(board)); return Promise.resolve(); }
+    };
+  }
+  function GitHubStore(token){
+    var gistId = null;
+    function api(method, path, body, allow404){
+      var h = { 'Authorization':'Bearer ' + token, 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28' };
+      if (body) h['Content-Type'] = 'application/json';
+      return fetch('https://api.github.com' + path, { method:method, cache:'no-store', headers:h, body:body ? JSON.stringify(body) : undefined }).then(function(r){
+        if (allow404 && r.status === 404) return null;
+        if (!r.ok) return r.text().then(function(t){ var e = new Error('GitHub ' + r.status + ' · ' + (t || '').slice(0, 140)); e.status = r.status; throw e; });
+        return r.status === 204 ? null : r.json();
+      });
+    }
+    function b64(str){ var b = new TextEncoder().encode(str), s = ''; for (var i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); }
+    function findGist(page){
+      return api('GET', '/gists?per_page=100&page=' + page).then(function(list){
+        var g = (list || []).filter(function(x){ return x.description === CFG.gistDesc; })[0];
+        if (g) return g.id;
+        if ((list || []).length === 100 && page < 5) return findGist(page + 1);
+        var files = {}; files[CFG.gistFile] = { content:JSON.stringify(emptyLog()) };
+        return api('POST', '/gists', { description:CFG.gistDesc, public:false, files:files }).then(function(n){ return n.id; });
+      });
+    }
+    return {
+      label:'GitHub · secret gist',
+      init:function(){ return api('GET', '/user').then(function(u){ if ((u.login || '').toLowerCase() !== CFG.owner) throw new Error('This token belongs to @' + u.login + ', not @' + CFG.owner + '.'); return findGist(1); }).then(function(id){ gistId = id; }); },
+      load:function(){
+        return api('GET', '/gists/' + gistId).then(function(g){
+          var f = g.files && g.files[CFG.gistFile]; if (!f) return emptyLog();
+          if (f.truncated) return fetch(f.raw_url, { cache:'no-store' }).then(function(r){ return r.json(); });
+          return JSON.parse(f.content || 'null') || emptyLog();
+        });
+      },
+      save:function(log){ var files = {}; files[CFG.gistFile] = { content:JSON.stringify(log) }; return api('PATCH', '/gists/' + gistId, { files:files }); },
+      publish:function(board){
+        var p = '/repos/' + CFG.owner + '/' + CFG.repo + '/contents/' + CFG.path;
+        var put = function(sha){
+          var body = { message:'White Christmas scoreboard: update ' + new Date(Date.now() + 8 * 36e5).toISOString().slice(0, 16).replace('T', ' ') + ' HKT', content:b64(JSON.stringify(board)), branch:CFG.branch };
+          if (sha) body.sha = sha;
+          return api('PUT', p, body);
+        };
+        var getSha = function(){ return api('GET', p + '?ref=' + CFG.branch, null, true).then(function(x){ return x && x.sha; }); };
+        return getSha().then(put).catch(function(e){ if (e.status === 409 || e.status === 422) return getSha().then(put); throw e; });
+      }
+    };
+  }
+
+  // ---------- rules → race, pools
+  function compute(log){
+    var start = Date.parse(CFG.start), end = Date.parse(CFG.end);
+    var E = log.entries.filter(function(e){ return !e.del; });
+    var inWin = function(e){ return e.at >= start && e.at <= end; };
+    var live = E.filter(function(e){ return e.status !== 'out' && inWin(e); });
+    var tries = {}, best = {};
+    live.forEach(function(e){
+      tries[e.h] = (tries[e.h] || 0) + 1;
+      if (e.t === 'feed' && e.st === 10) { var b = best[e.h]; if (!b || e.s > b.s || (e.s === b.s && e.at < b.at)) best[e.h] = e; }
+    });
+    var race = Object.keys(best).map(function(h){ return best[h]; })
+      .sort(function(a, b){ return b.s - a.s || a.at - b.at || (a.h < b.h ? -1 : 1); })
+      .map(function(e, i){ return { r:i + 1, h:e.h, s:e.s, n:tries[e.h] || 1, v:e.status === 'verified', e:e }; });
+    var draws = log.draws.filter(function(d){ return !d.del; });
+    var won = {}; // handle → week it won a beanie (one beanie each)
+    var weeks = CFG.weeks.map(function(w){
+      var a = wStart(w), b = wEnd(w), seen = {}, pool = [], excl = [];
+      live.forEach(function(e){ if (e.at >= a && e.at <= b && !seen[e.h]) { seen[e.h] = 1; if (won[e.h]) excl.push(e.h); else pool.push(e.h); } });
+      pool.sort();
+      var d = draws.filter(function(x){ return x.w === w.w; })[0] || null;
+      if (d) d.winners.forEach(function(x){ if (!x.replaced) won[x.h] = w.w; });
+      return { w:w.w, def:w, from:a, to:b, closed:NOW() > b, pool:pool, excl:excl, draw:d };
+    });
+    return { race:race, weeks:weeks, tries:tries, entries:live.length, players:race.length, all:E };
+  }
+  function buildBoard(log){
+    var c = compute(log);
+    var looks = log.looks && log.looks.winners && log.looks.winners.length ? log.looks.winners.map(function(x){ return { h:x.h, s:x.s }; }) : null;
+    var b = { v:1, cfg:{ start:CFG.start, end:CFG.end, weeks:CFG.weeks, game:CFG.game, tnc:CFG.tnc },
+      race:c.race.slice(0, CFG.boardMax).map(function(x){ return { r:x.r, h:x.h, s:x.s, n:x.n, v:x.v }; }),
+      players:c.players, entries:c.entries,
+      weeks:c.weeks.map(function(w){ return { w:w.w, pool:w.pool.length + w.excl.length, winners:w.draw ? w.draw.winners.filter(function(x){ return !x.replaced; }).map(function(x){ return x.h; }) : [] }; }),
+      looks:looks };
+    var hash = JSON.stringify(b);
+    b.updated = new Date(S.mode === 'practice' ? NOW() : Date.now()).toISOString();
+    if (S.mode === 'practice') b._now = NOW();
+    return { board:b, hash:hash };
+  }
+
+  // ---------- sync
+  function setSync(kind, txt){ var p = $('sync'); p.className = 'pill ' + kind; p.innerHTML = '<i>●</i>' + esc(txt); }
+  function syncLabel(){ if (S.err) return setSync('err', S.err); if (S.saving) return setSync('busy', 'Saving…'); setSync('ok', (S.mode === 'practice' ? 'Practice · saved ' : 'Synced ') + (S.lastSync ? hk(S.lastSync, { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }) : '')); }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function save(){
+    S.dirty = true; if (S.saving) return;
+    S.saving = true; syncLabel();
+    (function loop(){
+      if (!S.dirty) { S.saving = false; syncLabel(); autoPublish(); return; }
+      S.dirty = false;
+      S.store.load().then(function(remote){ S.log = merge(remote, S.log); return S.store.save(S.log); })
+        .then(function(){ S.fails = 0; S.err = ''; S.lastSync = Date.now(); render(); loop(); })
+        .catch(function(e){ S.fails++; S.err = 'Not saved · ' + e.message; S.dirty = true; syncLabel();
+          if (S.fails >= 3) { S.saving = false; S.err = 'Not saved — check the connection, then press Publish now to retry'; syncLabel(); return; }
+          sleep(4000).then(loop); });
+    })();
+  }
+  function poll(){
+    if (S.saving || document.visibilityState !== 'visible' || !S.store) return;
+    S.store.load().then(function(remote){
+      var before = JSON.stringify(S.log); S.log = merge(remote, S.log);
+      S.lastSync = Date.now(); if (!S.dirty) S.err = '';
+      if (JSON.stringify(S.log) !== before) render(); else syncLabel();
+    }).catch(function(e){ S.err = 'Offline · ' + e.message; syncLabel(); });
+  }
+  function commit(fn){ fn(S.log); render(); save(); }
+
+  // ---------- publish (throttled: auto ≤ every 10 min, manual ≥ 2 min apart — GitHub Pages builds ~10 an hour)
+  function pubLabel(){
+    var p = S.log && S.log.pub, el = $('pubst'), b = buildBoard(S.log), due = !p || p.hash !== b.hash;
+    var txt = p ? 'Public board ' + hk(p.at, { hour:'2-digit', minute:'2-digit', hour12:false }) : 'Public board not published yet';
+    if (due && p) { var left = Math.max(0, CFG.autoMin * 6e4 - (Date.now() - p.at)); txt += left ? ' · changes go up in ' + Math.ceil(left / 6e4) + ' min' : ' · updating…'; }
+    else if (p) txt += ' · up to date';
+    el.className = 'pill' + (due ? ' busy' : ' ok'); el.innerHTML = '<i>◎</i>' + esc(txt);
+  }
+  function publish(manual){
+    if (S.publishing) return;
+    var b = buildBoard(S.log), p = S.log.pub;
+    if (p && p.hash === b.hash) { if (manual) toast('The public board is already up to date'); return; }
+    if (manual && p && Date.now() - p.at < CFG.minGapMin * 6e4 && S.mode !== 'practice') { toast('Published ' + Math.round((Date.now() - p.at) / 1000) + ' s ago · wait a minute (GitHub limits page builds)'); return; }
+    S.publishing = true; $('pubst').className = 'pill busy'; $('pubst').innerHTML = '<i>◎</i>Publishing…';
+    S.store.publish(b.board).then(function(){
+      S.publishing = false;
+      commit(function(log){ log.pub = { hash:b.hash, at:Date.now(), by:S.who, u:Date.now() }; });
+      toast(S.mode === 'practice' ? 'Practice board updated' : 'Published · live on the public board in about a minute');
+    }).catch(function(e){ S.publishing = false; toast('Publish failed · ' + e.message); pubLabel(); });
+  }
+  function autoPublish(){
+    if (!S.log || S.saving) return;
+    var b = buildBoard(S.log), p = S.log.pub;
+    if (p && p.hash === b.hash) return pubLabel();
+    var wait = S.mode === 'practice' ? 0 : CFG.autoMin * 6e4;
+    if (!p || Date.now() - p.at >= wait) publish(false); else pubLabel();
+  }
+
+  // ---------- views
+  function tabs(){
+    var c = compute(S.log), need = c.race.slice(0, 10).filter(function(x){ return !x.v; }).length;
+    var T = [['race', 'Race', c.players + (need ? ' · ' + need + ' to check' : '')], ['entries', 'Entries', String(c.all.length)], ['draws', 'Weekly draws', '']];
+    $('tabs').innerHTML = T.map(function(t){ return '<button type="button" class="tab' + (S.tab === t[0] ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + (t[2] ? '<small>' + esc(t[2]) + '</small>' : '') + '</button>'; }).join('');
+  }
+  function stChip(e, rank){
+    if (e.status === 'verified') return '<span class="chip ok">✓ checked</span>';
+    if (e.status === 'out') return '<span class="chip out">out</span>';
+    if (rank && rank <= 10) return '<span class="chip need">needs recording</span>';
+    return '<span class="chip pend">pending</span>';
+  }
+  function igLink(h){ return '<a class="h" href="https://www.instagram.com/' + encodeURIComponent(h) + '/" target="_blank" rel="noopener">@' + esc(h) + '</a>'; }
+  function raceView(){
+    var c = compute(S.log), now = NOW(), closed = now > Date.parse(CFG.end), top10 = c.race.slice(0, 10), need = top10.filter(function(x){ return !x.v; }).length;
+    var html = '<div class="kpis">' +
+      '<div class="kpi"><div class="v">' + fmt(c.players) + '</div><div class="l">On the board (10/10 feed)</div></div>' +
+      '<div class="kpi"><div class="v">' + fmt(c.entries) + '</div><div class="l">Entries in the campaign</div></div>' +
+      '<div class="kpi' + (need ? ' hot' : '') + '"><div class="v">' + need + '</div><div class="l">Top 10 still to check</div></div>' +
+      '<div class="kpi"><div class="v">' + (closed ? 'CLOSED' : now < Date.parse(CFG.start) ? 'OPENS 30.11' : 'LIVE') + '</div><div class="l">Race · ends Sun 20 Dec 23:59</div></div></div>';
+    var L = S.log.looks && S.log.looks.winners && S.log.looks.winners.length ? S.log.looks : null;
+    if (closed || L) {
+      html += '<div class="final">' + (L ? '🏆 Full-look winners locked ' + esc(hk(L.at)) + ' by ' + esc(L.by || '—') + ': ' + L.winners.map(function(x){ return '@' + esc(x.h); }).join(' · ') + ' <button class="btn s l" type="button" data-act="unlock">Unlock</button>'
+        : 'Race closed. Check the top 3 recordings, then lock the winners — the public board shows them as WINNERS. <button class="btn s" type="button" data-act="lock">Lock top 3 as winners</button>') + '</div>';
+    }
+    if (!c.race.length) return html + '<div class="empty">No 10/10 feed posts logged yet. Add the first entry above.</div>';
+    html += '<div class="tw"><table><thead><tr><th>#</th><th>Player</th><th class="r">Best</th><th>Best posted</th><th>Tries</th><th>Status</th><th class="r">Check the best post</th></tr></thead><tbody>';
+    c.race.forEach(function(x){
+      var e = x.e;
+      html += '<tr class="' + (x.r <= 3 ? 'top3' : '') + '"><td class="n">' + x.r + '</td><td>' + igLink(x.h) + '</td><td class="sc">' + fmt(x.s) + '</td><td>' + esc(hk(e.at)) + '</td><td>' + x.n + ' <a href="#" data-act="player" data-h="' + esc(x.h) + '" class="mono">all</a></td><td>' + stChip(e, x.r) + '</td><td><div class="acts">' +
+        (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">post ↗</a>' : '') +
+        (e.status === 'verified' ? '<button class="btn s l" type="button" data-act="st" data-id="' + e.id + '" data-v="pending">Undo ✓</button>' : '<button class="btn s" type="button" data-act="st" data-id="' + e.id + '" data-v="verified">✓ Checked</button>') +
+        '<button class="btn s l" type="button" data-act="out" data-id="' + e.id + '">✕ Out</button></div></td></tr>';
+    });
+    html += '</tbody></table></div><div class="note">Each Monday DM the top 10 for a screen recording of their 10/10 run (48 h). ✓ Checked when it matches; ✕ Out drops that score and the player\'s next-best 10/10 feed post moves in. Ties go to the earliest post.</div>';
+    return html;
+  }
+  function entriesView(){
+    var c = compute(S.log), f = S.ef, start = Date.parse(CFG.start), end = Date.parse(CFG.end);
+    var rk = {}; c.race.forEach(function(x){ rk[x.e.id] = x.r; });
+    var rows = c.all.filter(function(e){
+      if (f.q && e.h.indexOf(norm(f.q)) < 0) return false;
+      if (f.t && e.t !== f.t) return false;
+      if (f.st && e.status !== f.st) return false;
+      if (f.w) { var w = weekOf(e.at) || 'out'; if (w !== f.w) return false; }
+      return true;
+    }).sort(function(a, b){ return b.at - a.at; });
+    var html = '<div class="flt"><input id="eq" placeholder="Search handle" value="' + esc(f.q) + '">' +
+      sel('ew', [['', 'All weeks'], ['W1', 'W1'], ['W2', 'W2'], ['W3', 'W3'], ['out', 'Outside dates']], f.w) +
+      sel('et', [['', 'Feed + Story'], ['feed', 'Feed'], ['story', 'Story']], f.t) +
+      sel('es', [['', 'Any status'], ['pending', 'Pending'], ['verified', 'Checked'], ['out', 'Out']], f.st) +
+      '<span class="mono">' + rows.length + ' of ' + c.all.length + '</span></div>';
+    if (!rows.length) return html + '<div class="empty">No entries match.</div>';
+    html += '<div class="tw"><table><thead><tr><th>Posted</th><th>Player</th><th class="r">Score</th><th>Stage</th><th>Type</th><th>Week</th><th>Counts for</th><th>Status</th><th>By</th><th></th></tr></thead><tbody>';
+    rows.forEach(function(e){
+      var inW = e.at >= start && e.at <= end, wk = weekOf(e.at);
+      var counts = !inW ? '<span class="chip oow">outside dates</span>' : e.status === 'out' ? '—' : (e.t === 'feed' && e.st === 10 ? (rk[e.id] ? 'race #' + rk[e.id] + ' + ' : 'race (not best) + ') : '') + 'beanie ' + wk;
+      html += '<tr><td>' + esc(hk(e.at)) + '</td><td>' + igLink(e.h) + '</td><td class="sc">' + fmt(e.s) + '</td><td>' + e.st + '/10</td><td>' + (e.t === 'feed' ? 'Feed' : 'Story') + (e.url ? ' <a href="' + esc(e.url) + '" target="_blank" rel="noopener">↗</a>' : '') + '</td><td>' + (wk || '—') + '</td><td>' + counts + '</td><td>' +
+        sel('', [['pending', 'Pending'], ['verified', '✓ Checked'], ['out', 'Out']], e.status, 'data-act="st2" data-id="' + e.id + '"') + (e.note ? '<div class="mono" title="' + esc(e.note) + '">' + esc(e.note.slice(0, 28)) + '</div>' : '') +
+        '</td><td class="mono">' + esc(e.by || '') + '</td><td><button class="x" type="button" title="Delete entry" data-act="del" data-id="' + e.id + '">✕</button></td></tr>';
+    });
+    return html + '</tbody></table></div>';
+  }
+  function sel(id, opts, v, attr){ return '<select class="sel"' + (id ? ' id="' + id + '"' : '') + (attr ? ' ' + attr : '') + '>' + opts.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === v ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; }
+  function drawsView(){
+    var c = compute(S.log), now = NOW();
+    var html = '<div class="dg">' + c.weeks.map(function(w){
+      var d = w.draw, isNow = now >= w.from && now <= w.to, opens = hk(w.to, { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:false });
+      var h = '<div class="dw' + (isNow ? ' now' : '') + '"><div class="hd"><b>' + w.w + '</b><span class="mono">' + esc(hk(w.from, { day:'numeric', month:'short' })) + ' – ' + esc(hk(w.to, { day:'numeric', month:'short' })) + ' · out ' + esc(hk(Date.parse(w.def.draw + 'T12:00:00+08:00'), { weekday:'short', day:'numeric', month:'short' })) + '</span></div>' +
+        '<div><span class="big">' + fmt(w.pool.length) + '</span> <span class="mono">accounts in the draw</span></div>' +
+        '<div class="mono">One entry per account · Story or feed · any stage' + (w.excl.length ? ' · ' + w.excl.length + ' already won a beanie' : '') + '</div>' +
+        '<div><button class="btn s l" type="button" data-act="pool" data-w="' + w.w + '"' + (w.pool.length ? '' : ' disabled') + '>Download pool (CSV)</button></div>';
+      if (d) {
+        h += '<ol>' + d.winners.map(function(x, i){ return '<li>' + (x.replaced ? '<s>@' + esc(x.h) + '</s><span class="mono">' + esc(x.reason || 'replaced') + '</span>' : igLink(x.h) + '<button class="btn s l" type="button" data-act="replace" data-w="' + w.w + '" data-i="' + i + '">No reply → redraw</button>') + '</li>'; }).join('') + '</ol>' +
+          '<div class="audit">Drawn ' + esc(hk(d.at, { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false })) + ' HKT by ' + esc(d.by || '—') + ' · pool ' + d.pool.length + ' · browser crypto random (uniform)' + (d.redraws ? ' · ' + d.redraws + ' redraw' + (d.redraws > 1 ? 's' : '') : '') + '</div>';
+      } else {
+        h += '<button class="btn" type="button" data-act="draw" data-w="' + w.w + '"' + (w.closed && w.pool.length >= 1 ? '' : ' disabled') + '>Draw ' + CFG.drawN + ' winners</button>' +
+          '<div class="mono">' + (w.closed ? (w.pool.length ? 'Entries closed · ready to draw' : 'No entries') : 'Opens after ' + esc(opens)) + '</div>';
+      }
+      return h + '</div>';
+    }).join('') + '</div><div class="note">Draw on the Monday, with a colleague watching, and keep the CSV of the pool for the licence record. A draw winner can still win a full look; a beanie winner leaves later pools (one beanie each).</div>';
+    return html;
+  }
+  function render(){
+    if (!S.log) return;
+    tabs();
+    $('view').innerHTML = S.tab === 'entries' ? entriesView() : S.tab === 'draws' ? drawsView() : raceView();
+    var hs = {}; S.log.entries.forEach(function(e){ if (!e.del) hs[e.h] = 1; });
+    $('handles').innerHTML = Object.keys(hs).sort().map(function(h){ return '<option value="@' + esc(h) + '">'; }).join('');
+    syncLabel(); pubLabel();
+    var eq = $('eq'); if (eq && S.focusEq) { eq.focus(); eq.setSelectionRange(eq.value.length, eq.value.length); }
+  }
+
+  // ---------- actions
+  function addEntry(ev){
+    ev.preventDefault();
+    var h = norm($('fH').value), s = parseInt(String($('fS').value).replace(/[,\s]/g, ''), 10), st = parseInt($('fSt').value, 10);
+    var t = document.querySelector('input[name=fT]:checked').value, atv = $('fAt').value, url = $('fU').value.trim();
+    if (!validH(h)) { hint('<span class="w">Check the handle: letters, numbers, . and _ only.</span>'); $('fH').focus(); return; }
+    if (!(s >= 0 && s < 10000000)) { hint('<span class="w">Score must be a number.</span>'); $('fS').focus(); return; }
+    var at = atv ? Date.parse(atv + ':00+08:00') : NOW();
+    if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+    var dup = S.log.entries.filter(function(e){ return !e.del && e.h === h && e.s === s && e.t === t; })[0];
+    if (dup && !confirm('@' + h + ' already has a ' + t + ' entry with ' + fmt(s) + ' (' + hk(dup.at) + '). Add it again?')) return;
+    var e = { id:uid(), h:h, s:s, st:st, t:t, at:at, url:url, by:S.who, ts:Date.now(), status:'pending', note:'', u:Date.now() };
+    commit(function(log){ log.entries.push(e); });
+    var c = compute(S.log), r = c.race.filter(function(x){ return x.e.id === e.id; })[0], wk = weekOf(at);
+    var msg = 'Added <b>@' + esc(h) + ' · ' + fmt(s) + '</b> (' + t + ' ' + st + '/10) → ';
+    if (at < Date.parse(CFG.start) || at > Date.parse(CFG.end)) msg += '<span class="w">posted outside 30 Nov – 20 Dec, so it doesn\'t count</span>';
+    else if (r) msg += '<b>#' + r.r + '</b> in the race + ' + wk + ' beanie';
+    else if (t === 'feed' && st === 10) msg += 'below this player\'s best · ' + wk + ' beanie';
+    else msg += wk + ' beanie only (race needs a 10/10 feed post)';
+    hint(msg);
+    $('fH').value = ''; $('fS').value = ''; $('fU').value = ''; $('fSt').value = '10'; $('fH').focus();
+  }
+  function hint(h){ $('hint').innerHTML = h; }
+  function setStatus(id, v, note){
+    commit(function(log){ log.entries.forEach(function(e){ if (e.id === id) { e.status = v; if (note != null) e.note = note; e.u = Date.now(); e.vb = S.who; } }); });
+  }
+  function doDraw(wk){
+    var c = compute(S.log), w = c.weeks.filter(function(x){ return x.w === wk; })[0];
+    if (!w || w.draw || !w.closed) return;
+    var n = Math.min(CFG.drawN, w.pool.length);
+    if (!confirm('Draw ' + n + ' winners for ' + wk + ' from ' + w.pool.length + ' accounts?\n\nThis is recorded with the time and your initials (' + S.who + ') and can\'t be redone.')) return;
+    var pool = w.pool.slice(), winners = [];
+    for (var i = 0; i < n; i++) { var k = randInt(pool.length); winners.push({ h:pool[k] }); pool.splice(k, 1); }
+    commit(function(log){ log.draws.push({ id:uid(), w:wk, at:Date.now(), by:S.who, pool:w.pool.slice(), winners:winners, redraws:0, u:Date.now() }); });
+    toast(wk + ' winners: ' + winners.map(function(x){ return '@' + x.h; }).join(', '));
+  }
+  function replaceWinner(wk, i){
+    var d = S.log.draws.filter(function(x){ return !x.del && x.w === wk; })[0]; if (!d) return;
+    var gone = d.winners[i]; if (!gone || gone.replaced) return;
+    var taken = {}; d.winners.forEach(function(x){ taken[x.h] = 1; });
+    var left = d.pool.filter(function(h){ return !taken[h]; });
+    if (!left.length) { toast('Nobody left in the pool to draw'); return; }
+    var reason = prompt('Why is @' + gone.h + ' replaced?', 'no reply in 24 h'); if (reason == null) return;
+    var pickH = left[randInt(left.length)];
+    commit(function(log){ log.draws.forEach(function(x){ if (x.id === d.id) { x.winners[i] = { h:gone.h, replaced:true, reason:reason }; x.winners.push({ h:pickH }); x.redraws = (x.redraws || 0) + 1; x.u = Date.now(); } }); });
+    toast('Redrawn: @' + pickH);
+  }
+  function csv(rows){ return rows.map(function(r){ return r.map(function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n'); }
+  function download(name, text){ var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + text], { type:'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target.closest('[data-act],[data-tab]'); if (!t) { $('menu').classList.remove('on'); return; }
+    if (t.dataset.tab) { S.tab = t.dataset.tab; ls(LS.tab, S.tab); render(); return; }
+    var a = t.dataset.act;
+    if (a !== 'menu') $('menu').classList.remove('on');
+    if (a === 'menu') { $('menu').classList.toggle('on'); return; }
+    if (a === 'publish') { if (S.err && !S.saving) { S.fails = 0; save(); } publish(true); }
+    if (a === 'st') setStatus(t.dataset.id, t.dataset.v);
+    if (a === 'out') { var r = prompt('Reason (kept in the team log only):', 'edited card / no recording'); if (r != null) setStatus(t.dataset.id, 'out', r); }
+    if (a === 'del') { if (confirm('Delete this entry? (Use "Out" instead if the score was disqualified.)')) commit(function(log){ log.entries.forEach(function(e){ if (e.id === t.dataset.id) { e.del = true; e.u = Date.now(); } }); }); }
+    if (a === 'player') { ev.preventDefault(); S.ef = { q:t.dataset.h, w:'', t:'', st:'' }; S.tab = 'entries'; render(); }
+    if (a === 'draw') doDraw(t.dataset.w);
+    if (a === 'replace') replaceWinner(t.dataset.w, +t.dataset.i);
+    if (a === 'pool') { var w = compute(S.log).weeks.filter(function(x){ return x.w === t.dataset.w; })[0]; download('wx_' + w.w + '_pool.csv', csv([['week', 'handle', 'in_pool']].concat(w.pool.map(function(h){ return [w.w, '@' + h, 'yes']; })).concat(w.excl.map(function(h){ return [w.w, '@' + h, 'no - already won a beanie']; })))); }
+    if (a === 'csv') { download('wx_entries_' + hk(Date.now(), { year:'numeric', month:'2-digit', day:'2-digit' }).replace(/\//g, '') + '.csv', csv([['posted_hkt', 'handle', 'score', 'stage', 'type', 'week', 'status', 'note', 'post_url', 'logged_by']].concat(S.log.entries.filter(function(e){ return !e.del; }).sort(function(a, b){ return a.at - b.at; }).map(function(e){ return [hk(e.at, { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false }), '@' + e.h, e.s, e.st, e.t, weekOf(e.at), e.status, e.note, e.url, e.by]; })))); }
+    if (a === 'lock') {
+      var top = compute(S.log).race.slice(0, 3);
+      if (top.length < 3 && !confirm('Only ' + top.length + ' players on the board. Lock them anyway?')) return;
+      var unchecked = top.filter(function(x){ return !x.v; });
+      if (unchecked.length) { alert('Check these first: ' + unchecked.map(function(x){ return '@' + x.h; }).join(', ') + '\n(✓ Checked once their recording matches, or ✕ Out.)'); return; }
+      commit(function(log){ log.looks = { winners:top.map(function(x){ return { h:x.h, s:x.s }; }), at:Date.now(), by:S.who, u:Date.now() }; });
+    }
+    if (a === 'unlock') { if (confirm('Unlock the full-look winners? The public board goes back to the live race.')) commit(function(log){ log.looks = { winners:[], at:Date.now(), by:S.who, u:Date.now() }; }); }
+    if (a === 'switch') { ls(LS.mode, S.mode === 'practice' ? 'live' : 'practice'); location.reload(); }
+    if (a === 'forget') { if (confirm('Remove the GitHub token from this browser?')) { ls(LS.token, null); ls(LS.mode, null); location.reload(); } }
+  });
+  document.addEventListener('change', function(ev){
+    var t = ev.target;
+    if (t.dataset && t.dataset.act === 'st2') { var v = t.value; if (v === 'out') { var r = prompt('Reason (kept in the team log only):', 'edited card / no recording'); if (r == null) { render(); return; } setStatus(t.dataset.id, v, r); } else setStatus(t.dataset.id, v); }
+    if (t.id === 'ew' || t.id === 'et' || t.id === 'es') { S.ef[{ ew:'w', et:'t', es:'st' }[t.id]] = t.value; render(); }
+    if (t.id === 'sim') { ls(LS.sim, t.value || null); $('fAt').value = hkInput(NOW()); render(); publish(false); }
+  });
+  document.addEventListener('input', function(ev){ if (ev.target.id === 'eq') { S.ef.q = ev.target.value; S.focusEq = true; render(); S.focusEq = false; } });
+
+  // ---------- start
+  function gate(msg){
+    $('app').hidden = true; var g = $('gate'); g.hidden = false; g.className = 'wrap gate';
+    g.innerHTML = '<h1>WX SCOREBOARD · CONNECT</h1>' +
+      '<div class="card"><b>Connect this device once.</b> The console keeps the team\'s entry log in a secret GitHub gist and publishes the public board to <code>seanlaifnf.github.io/mlbkolresearch/wx-scoreboard/</code>.' +
+      '<ol style="margin-top:10px"><li>On github.com (signed in as <b>seanlaifnf</b>): <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b></li>' +
+      '<li>Name <code>wx-scoreboard</code> · Expiration <code>31 Jan 2027</code> · Repository access: <b>Only select repositories → mlbkolresearch</b></li>' +
+      '<li>Repository permissions → <b>Contents: Read and write</b> · Account permissions → <b>Gists: Read and write</b></li>' +
+      '<li>Generate token, copy it, paste it below.</li></ol></div>' +
+      '<div class="card" style="display:flex;flex-direction:column;gap:10px"><div class="row"><input id="gTok" type="password" placeholder="github_pat_…" autocomplete="off"><input id="gWho" placeholder="Your initials" maxlength="6" value="' + esc(ls(LS.who) || '') + '"></div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" id="gGo">Connect</button><button class="btn l" type="button" id="gPr">Practice mode (nothing goes online)</button></div>' +
+      '<div class="err" id="gErr">' + esc(msg || '') + '</div>' +
+      '<div class="mono">The token stays in this browser only — never in the page or the repo. Remove it any time from the ⋯ menu.</div></div>';
+    $('gGo').onclick = function(){
+      var tok = $('gTok').value.trim(), who = $('gWho').value.trim().toUpperCase();
+      if (!tok) { $('gErr').textContent = 'Paste the token first.'; return; }
+      if (!who) { $('gErr').textContent = 'Add your initials (they go on every entry and draw).'; return; }
+      ls(LS.who, who); ls(LS.token, tok); ls(LS.mode, 'live'); $('gErr').textContent = 'Connecting…'; start();
+    };
+    $('gPr').onclick = function(){ var who = $('gWho').value.trim().toUpperCase() || 'TEST'; ls(LS.who, who); ls(LS.mode, 'practice'); start(); };
+  }
+  function start(){
+    var mode = ls(LS.mode), tok = ls(LS.token);
+    if (mode !== 'practice' && !(mode === 'live' && tok)) return gate();
+    S.mode = mode; S.who = ls(LS.who) || '—';
+    S.store = mode === 'practice' ? PracticeStore() : GitHubStore(tok);
+    S.tab = ls(LS.tab) || 'race';
+    S.store.init().then(function(){ return S.store.load(); }).then(function(log){
+      S.log = merge(log, null); S.lastSync = Date.now();
+      $('gate').hidden = true; $('app').hidden = false;
+      $('mode').className = 'mode ' + mode; $('mode').textContent = mode === 'practice' ? 'PRACTICE' : 'LIVE';
+      $('openPub').href = mode === 'practice' ? '../?practice=1' : '../';
+      $('simBox').style.display = mode === 'practice' ? '' : 'none';
+      $('sim').innerHTML = SIMS.map(function(o){ return '<option value="' + o[0] + '"' + ((ls(LS.sim) || '') === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('');
+      $('swBtn').textContent = mode === 'practice' ? (tok ? 'Switch to LIVE' : 'Connect GitHub (go live)') : 'Switch to practice mode';
+      $('fgBtn').style.display = tok ? '' : 'none';
+      var o = ''; for (var i = 10; i >= 1; i--) o += '<option value="' + i + '">' + i + '/10</option>'; $('fSt').innerHTML = o;
+      $('fAt').value = hkInput(NOW());
+      $('add').addEventListener('submit', addEntry);
+      render(); autoPublish();
+      setInterval(poll, CFG.pollSec * 1000);
+      setInterval(function(){ pubLabel(); autoPublish(); }, 30000);
+      setInterval(function(){ if (document.activeElement !== $('fAt')) $('fAt').value = hkInput(NOW()); }, 60000);
+    }).catch(function(e){
+      if (mode === 'live' && (e.status === 401 || e.status === 403 || /belongs to/.test(e.message))) { ls(LS.token, null); ls(LS.mode, null); gate('Could not connect: ' + e.message); } else if (mode === 'live') { gate('Could not reach GitHub (' + e.message + '). Check the connection and reload — the saved token is kept.'); } else gate(e.message);
+    });
+  }
+  start();
+})();
+</script>
+</body>
+</html>
